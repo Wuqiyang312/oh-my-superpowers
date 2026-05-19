@@ -1,0 +1,13 @@
+{
+  "name": "oh-my-superpowers",
+  "description": "通用 AI 编程工具链：结合 mattpocock-skills-cn 和 superpowers-cn 的精华，覆盖设计、计划、执行、审查全流程",
+  "version": "1.0.0",
+  "author": {
+    "name": "Wuqiyang312",
+    "url": "https://github.com/Wuqiyang312"
+  },
+  "homepage": "https://github.com/Wuqiyang312/oh-my-superpowers",
+  "repository": "https://github.com/Wuqiyang312/oh-my-superpowers",
+  "license": "MIT",
+  "keywords": ["skills", "tdd", "debugging", "chinese", "中文", "best-practices", "workflows", "grill", "plan-execute"]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "oh-my-superpowers",
+  "skills": [
+    "./general/diagnose",
+    "./general/test-driven-development",
+    "./general/brainstorming",
+    "./general/writing-plans",
+    "./general/executing-plans",
+    "./general/requesting-code-review",
+    "./general/receiving-code-review",
+    "./general/finishing-a-development-branch",
+    "./general/using-git-worktrees",
+    "./general/grill-with-docs",
+    "./general/grill-me",
+    "./general/improve-codebase-architecture",
+    "./general/to-prd",
+    "./general/to-issues",
+    "./general/prototype",
+    "./general/zoom-out",
+    "./general/caveman",
+    "./general/handoff",
+    "./general/writing-skills",
+    "./chinese/chinese-code-review",
+    "./chinese/chinese-commit-conventions",
+    "./chinese/chinese-documentation",
+    "./chinese/chinese-git-workflow",
+    "./setup/using-oh-my-superpowers",
+    "./setup/setup-oh-my-superpowers"
+  ]
+}
