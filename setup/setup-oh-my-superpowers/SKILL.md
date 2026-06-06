@@ -9,7 +9,7 @@ disable-model-invocation: true
 搭建各技能依赖的每仓库配置：
 
 - **问题跟踪器** —— issues 存放在哪里（默认 GitHub；本地 markdown 也开箱即用）
-- **领域文档** —— `CONTEXT.md`、`docs/design/`、`docs/plans/`、`docs/adr/` 存放在哪里，以及读取规则
+- **领域文档** —— `AGENTS.md`、`docs/agents/`、`docs/design/`、`docs/plans/`、`docs/adr/`、`docs/specs/` 存放在哪里，以及读取规则
 - **工具链偏好** —— 端到端模式偏好（模式 1：仅设计/计划，或模式 2：设计/计划/执行）
 
 这是一个提示驱动的技能，不是确定性脚本。先探索，呈现你的发现，与用户确认，然后再写入。
@@ -22,8 +22,7 @@ disable-model-invocation: true
 
 - `git remote -v` 和 `.git/config`
 - 仓库根目录的 `AGENTS.md` 和 `CLAUDE.md` —— 两者中是否有任何一个存在？其中是否已有 `## Agent skills` 部分？
-- 仓库根目录的 `CONTEXT.md` 和 `CONTEXT-MAP.md`
-- `docs/adr/`、`docs/design/`、`docs/plans/` 目录
+- `docs/agents/`、`docs/adr/`、`docs/design/`、`docs/plans/`、`docs/specs/` 目录
 
 ### 2. 呈现发现并提问
 
@@ -39,7 +38,7 @@ disable-model-invocation: true
 **部分 B —— 领域文档布局。**
 
 确认：
-- **单上下文** —— 根目录下一个 `CONTEXT.md` + `docs/adr/` + `docs/design/` + `docs/plans/`
+- **单上下文** —— 根目录下一个 `AGENTS.md` + `docs/agents/` + `docs/adr/` + `docs/design/` + `docs/plans/` + `docs/specs/`
 - **多上下文** —— 根目录下的 `CONTEXT-MAP.md` 指向每个上下文的文件
 
 **部分 C —— 工具链模式。**

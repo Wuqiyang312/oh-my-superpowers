@@ -4,7 +4,7 @@
 
 | 技能 | 描述 |
 |------|------|
-| [grill-with-docs](./grill-with-docs/SKILL.md) | 拷问设计，打磨术语，输出 CONTEXT.md、ADR 和 design 文档 |
+| [grill-with-docs](./grill-with-docs/SKILL.md) | 拷问设计，打磨术语，输出 AGENTS.md、docs/agents/、ADR 和 design 文档 |
 | [grill-me](./grill-me/SKILL.md) | 对你计划的每个方面进行 relentless 的访谈 |
 | [writing-plans](./writing-plans/SKILL.md) | 从设计文档生成可执行计划 |
 | [executing-plans](./executing-plans/SKILL.md) | 多/单智能体执行实现计划，两阶段审查 |
@@ -29,9 +29,11 @@
 ```
 grill-with-docs → writing-plans → executing-plans
        │              │
-       ├─ docs/design/ │
-       └─ CONTEXT.md   └─ docs/plans/
-           + ADR
+       ├─ docs/agents/  │
+       ├─ AGENTS.md     │
+       ├─ docs/design/  │
+       └─ docs/adr/     └─ docs/plans/
+           + docs/specs/
 
 caveman (自动压缩) → 贯穿整个链路
 ```

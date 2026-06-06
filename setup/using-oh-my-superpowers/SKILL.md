@@ -36,7 +36,7 @@ grill-with-docs (设计) ──→ writing-plans (计划) ──→ executing-pl
 ### 端到端模式
 
 **模式 1（设计 + 计划）：**
-1. `grill-with-docs` — 拷问想法，打磨术语，输出 CONTEXT.md + ADR + `docs/design/`
+1. `grill-with-docs` — 拷问想法，打磨术语，输出 AGENTS.md + docs/agents/ + ADR + `docs/design/`
 2. `writing-plans` — 从 `docs/design/` 读取，输出 `docs/plans/`
 
 **模式 2（设计 + 计划 + 执行）：**

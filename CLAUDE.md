@@ -19,8 +19,10 @@
 模式 2: grill-with-docs → writing-plans → executing-plans
 
 统一 docs/ 目录:
-  CONTEXT.md          (术语表)
+  AGENTS.md           (核心记录文件，引导智能体阅读 docs/agents/)
+  docs/agents/        (配置文件目录)
   docs/adr/           (设计决策)
   docs/design/        (设计概要)
+  docs/specs/         (验证的设计)
   docs/plans/         (执行计划)
 ```

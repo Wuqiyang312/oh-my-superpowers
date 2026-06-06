@@ -27,7 +27,7 @@
 - Agent 3："为最常见的调用方优化——让默认情况变得轻而易举。"
 - Agent 4（如适用）："围绕端口与适配器设计跨接缝依赖。"
 
-在简报中同时包含 [LANGUAGE.md](LANGUAGE.md) 词汇和 CONTEXT.md 词汇，以便每个子 agent 的命名与架构语言和项目领域语言保持一致。
+在简报中同时包含 [LANGUAGE.md](LANGUAGE.md) 词汇和 AGENTS.md 词汇，以便每个子 agent 的命名与架构语言和项目领域语言保持一致。
 
 每个子 agent 输出：
 

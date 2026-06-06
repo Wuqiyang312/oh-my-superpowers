@@ -18,8 +18,18 @@ _避免使用_：spec、需求文档、PRD
 `docs/plans/<feature>.md`，writing-plans 产出的可执行实现计划，包含任务拆分、文件列表和步骤。
 _避免使用_：task list、todo list
 
+**验证的设计（Validated Spec）**：
+`docs/specs/<topic>.md`，brainstorming 产出的验证通过的设计规格文档。
+_避免使用_：superpowers specs
+
+**配置文件目录（Agents Config）**：
+`docs/agents/`，setup-oh-my-superpowers 产出的技能配置文件目录，包含 issue-tracker.md、domain.md、toolchain.md 等。
+
+**核心记录文件（Agents Manifest）**：
+`AGENTS.md`，仓库根目录下的核心记录文件，引导智能体阅读 `docs/agents/` 中的配置文件。
+
 **统一 docs 目录（Unified Docs Directory）**：
-`CONTEXT.md` + `docs/adr/` + `docs/design/` + `docs/plans/` 组成的标准文档结构，确保工具链各阶段通过文件系统交接。
+`AGENTS.md` + `docs/agents/` + `docs/adr/` + `docs/design/` + `docs/specs/` + `docs/plans/` 组成的标准文档结构，确保工具链各阶段通过文件系统交接。
 
 ## 关系
 
