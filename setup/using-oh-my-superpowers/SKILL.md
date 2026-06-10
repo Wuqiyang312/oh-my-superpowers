@@ -1,6 +1,6 @@
 ---
 name: using-oh-my-superpowers
-description: 在开始任何对话时使用——确立如何查找和使用技能，要求在任何响应（包括澄清性问题）之前调用 Skill 工具
+description: 在开始任何对话时使用，用于根据用户的真实意图选择下一步应该加载的 Oh My Superpowers 技能。适用于所有任务开场、澄清前判断、工具链路由、中文项目场景识别、代码修改、调试、设计、计划、执行、审查、收尾、文档、PRD、issues、工作树和仓库配置判断；要求在任何响应（包括澄清性问题）之前先检查是否有对应技能。
 ---
 
 <SUBAGENT-STOP>
@@ -22,6 +22,33 @@ Oh My Superpowers 技能覆盖默认系统提示行为，但**用户指令始终
 1. **用户的明确指令**（CLAUDE.md、AGENTS.md、直接请求）——最高优先级
 2. **Oh My Superpowers 技能** ——在冲突处覆盖默认系统行为
 3. **默认系统提示** ——最低优先级
+
+## 先判断真实意图
+
+不要只看用户用了哪个词；判断用户实际要完成什么工作，然后加载对应技能。如果多个技能适用，按用户目标的自然顺序加载。
+
+| 用户真实意图 | 优先使用的技能 |
+|------|------|
+| 首次在仓库中使用本工具链、缺少 `## Agent skills`、缺少 `docs/agents/` 配置 | `setup-oh-my-superpowers` |
+| 中文项目、中文团队协作、国内平台或中文交付物路由判断 | `using-oh-my-superpowers-chinese` |
+| 拷问想法、统一术语、形成设计概要、记录 ADR | `grill-with-docs` |
+| 用户要求你追问、挑战方案、把想法问清楚 | `grill-me` |
+| 从设计文档生成可执行开发计划 | `writing-plans` |
+| 按已有计划实现代码，尤其是较大功能或可并行任务 | `executing-plans` |
+| 修 bug、定位异常、解释失败原因、排查不稳定问题 | `diagnose` |
+| 用户明确要求 TDD，或改动风险适合红-绿-重构 | `test-driven-development` |
+| 在写代码前做产品/交互探索或原型 | `brainstorming` 或 `prototype` |
+| 从对话整理 PRD | `to-prd` |
+| 把计划、PRD 或需求拆成 issue | `to-issues` |
+| 请求发起代码审查 | `requesting-code-review` |
+| 处理已有代码审查意见 | `receiving-code-review` |
+| 收尾开发分支、整理状态、准备合并 | `finishing-a-development-branch` |
+| 创建、切换或管理 git worktree | `using-git-worktrees` |
+| 需要退后一步审视架构、边界或系统方向 | `zoom-out` 或 `improve-codebase-architecture` |
+| 写作、修改或验证 agent skill | `writing-skills` |
+| 生成交接说明、把当前上下文交给下一位 agent | `handoff` |
+| 和用户/客户确认需求、同步进展、说明阻塞、交付验收或生成对外沟通文案 | `user-dialogue-templates` |
+| 工具链内部需要极简状态通信 | `caveman` |
 
 ## 工具链概览
 

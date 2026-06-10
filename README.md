@@ -65,6 +65,7 @@ docs/
 | [zoom-out](./general/zoom-out/SKILL.md) | 让 agent zoom out 看全局 |
 | [caveman](./general/caveman/SKILL.md) | 超压缩通信，工具链内自动启用 |
 | [handoff](./general/handoff/SKILL.md) | 对话 → 交接文档 |
+| [user-dialogue-templates](./general/user-dialogue-templates/SKILL.md) | 用户对话和项目对接模板 |
 
 ### [Chinese](./chinese/) — 中文特定规范
 
@@ -79,7 +80,8 @@ docs/
 
 | 技能 | 描述 |
 |------|------|
-| [using-oh-my-superpowers](./setup/using-oh-my-superpowers/SKILL.md) | 对话引导 / bootstrap |
+| [using-oh-my-superpowers](./setup/using-oh-my-superpowers/SKILL.md) | 根据用户真实意图路由到对应技能 |
+| [using-oh-my-superpowers-chinese](./setup/using-oh-my-superpowers-chinese/SKILL.md) | 中文项目和国内团队场景路由优化 |
 | [setup-oh-my-superpowers](./setup/setup-oh-my-superpowers/SKILL.md) | per-repo 配置安装 |
 
 ## 许可

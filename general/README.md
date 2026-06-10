@@ -23,6 +23,7 @@
 | [zoom-out](./zoom-out/SKILL.md) | 让 agent zoom out 看全局 |
 | [caveman](./caveman/SKILL.md) | 超压缩通信，工具链内自动启用 |
 | [handoff](./handoff/SKILL.md) | 对话 → 交接文档 |
+| [user-dialogue-templates](./user-dialogue-templates/SKILL.md) | 用户对话和项目对接模板 |
 
 ## 工具链
 

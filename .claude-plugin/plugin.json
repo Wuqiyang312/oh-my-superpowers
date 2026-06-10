@@ -19,12 +19,14 @@
     "./general/zoom-out",
     "./general/caveman",
     "./general/handoff",
+    "./general/user-dialogue-templates",
     "./general/writing-skills",
     "./chinese/chinese-code-review",
     "./chinese/chinese-commit-conventions",
     "./chinese/chinese-documentation",
     "./chinese/chinese-git-workflow",
     "./setup/using-oh-my-superpowers",
+    "./setup/using-oh-my-superpowers-chinese",
     "./setup/setup-oh-my-superpowers"
   ]
 }
