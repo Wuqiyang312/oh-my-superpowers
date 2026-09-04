@@ -67,3 +67,53 @@ test('无关路径返回 null', () => {
 test('dateFor 返回 YYYY-MM-DD', () => {
   assert.match(dateFor('README.md', ROOT), /^\d{4}-\d{2}-\d{2}$/);
 });
+
+import { walk, preflight, scan, EXCLUDE_GLOBS } from './migrate.mjs';
+
+test('walk 跳过排除目录', () => {
+  const files = walk(ROOT);
+  assert.ok(!files.some((f) => f.includes('node_modules/')));
+  assert.ok(files.includes('README.md'));
+});
+
+test('preflight 在 git 仓库内返回 ok', () => {
+  assert.equal(preflight(ROOT).ok, true);
+});
+
+test('preflight 在非 git 目录返回 false', () => {
+  // 用新建的临时目录，不能用 /tmp——os.tmpdir() 本身可能碰巧落在某个 git 仓库内
+  // （本机 C:\Users\<user> 就是一个 git 仓库，git -C 会向上找到它）。
+  // 用 GIT_CEILING_DIRECTORIES 截住上溯，让临时目录真正成为"非 git 目录"。
+  const savedCeiling = process.env.GIT_CEILING_DIRECTORIES;
+  process.env.GIT_CEILING_DIRECTORIES = os.tmpdir();
+  try {
+    const notGit = fs.mkdtempSync(path.join(os.tmpdir(), 'notgit-'));
+    const r = preflight(notGit);
+    assert.equal(r.ok, false);
+    assert.match(r.reason, /git/);
+  } finally {
+    if (savedCeiling === undefined) delete process.env.GIT_CEILING_DIRECTORIES;
+    else process.env.GIT_CEILING_DIRECTORIES = savedCeiling;
+  }
+});
+
+test('scan 报告 design 类别的命中数与文件数', () => {
+  const report = scan(ROOT, ['design']);
+  const c = report.categories.find((x) => x.id === 'design');
+  assert.ok(c.hits >= 18, `期望至少 18 处，实际 ${c.hits}`);
+  assert.ok(c.files >= 10);
+});
+
+test('scan 默认排除 docs/specs 与 docs/plans', () => {
+  const report = scan(ROOT, ['design', 'superpowers-docs']);
+  assert.ok(!report.hits.some((h) => h.path.startsWith('docs/specs/')));
+});
+
+test('scan 覆盖 docs/superpowers/plans 这个非 specs 子目录', () => {
+  // 回归守卫：general/requesting-code-review/SKILL.md 里有 docs/superpowers/plans/。
+  // 只为 specs/ 写特例规则会漏掉它，所以规则必须泛化成 docs/superpowers/<x>/。
+  const report = scan(ROOT, ['superpowers-docs']);
+  const c = report.categories.find((x) => x.id === 'superpowers-docs');
+  assert.ok(c.files >= 3, `期望至少 3 个文件（含 requesting-code-review），实际 ${c.files}`);
+  assert.ok(report.hits.some((h) => h.path === 'general/requesting-code-review/SKILL.md'));
+});
