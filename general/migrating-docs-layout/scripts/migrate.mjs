@@ -180,7 +180,12 @@ export function apply(root, categories, { dryRun = true, backup = false } = {}) 
   if (backup && !dryRun) {
     backupDir = path.join(path.dirname(root), `.migrate-backup-${path.basename(root)}-${Date.now()}`);
     try {
-      fs.cpSync(root, backupDir, { recursive: true, filter: (s) => !s.includes('.git') && !s.includes('.migrate-backup-') });
+      fs.cpSync(root, backupDir, {
+        recursive: true,
+        // 用 basename 精确判断：子串匹配会把 .gitignore / .gitattributes 一起排除掉，
+        // 而备份正是 git 历史不够用时的那道保险，丢 dotfile 不该发生。
+        filter: (s) => path.basename(s) !== '.git' && !path.basename(s).startsWith('.migrate-backup-'),
+      });
     } catch (e) {
       throw new Error(`备份失败，已中止迁移（在此之前未改动任何文件）：无法写入备份目录 ${backupDir} —— ${e.message}`);
     }

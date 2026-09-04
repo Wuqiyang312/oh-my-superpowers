@@ -57,7 +57,9 @@ node scripts/migrate.mjs apply --categories <选中项,逗号分隔> --root <pat
 node scripts/migrate.mjs apply --categories <选中项> --apply --root <path>
 ```
 
-需要额外保险时加 `--backup`，会在仓库根生成 `.migrate-backup-<时间戳>/`。
+需要额外保险时加 `--backup`，会在**仓库的上一级目录**生成 `.migrate-backup-<仓库名>-<时间戳>/`。
+
+（必须落在仓库外：Node 拒绝把目录拷进它自己的子目录；而且备份里全是旧路径文本，留在仓库内会被下一次扫描当成命中。）
 
 目标文件已存在时脚本跳过并记入 `conflicts`，绝不覆盖。
 

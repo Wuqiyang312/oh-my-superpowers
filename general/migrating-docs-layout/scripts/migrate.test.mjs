@@ -172,3 +172,13 @@ test('apply --backup 生成可用的备份且不影响迁移结果', () => {
   // 迁移本身仍然正常
   assert.ok(fs.existsSync(path.join(root, 'docs/specs')));
 });
+
+test('备份保留 .gitignore 等 dotfile，但仍排除 .git', () => {
+  const root = makeFixture();
+  const r = apply(root, ['design'], { dryRun: false, backup: true });
+  const bak = path.join(r.backupDir, '.gitignore');
+  assert.ok(fs.existsSync(bak), '备份应含 .gitignore');
+  assert.equal(fs.readFileSync(bak, 'utf8'), 'node_modules/\n*.log\n');
+  // filter 必须同时守住另一半：.git 目录仍然不进备份
+  assert.ok(!fs.existsSync(path.join(r.backupDir, '.git')), '备份不应含 .git 目录');
+});

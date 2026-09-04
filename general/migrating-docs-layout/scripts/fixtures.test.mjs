@@ -16,6 +16,7 @@ export function makeFixture() {
   w('docs/superpowers/adr/1.md', '# adr 1\n');
   w('.superpowers/brainstorm/x.html', '<p>x</p>\n');
   w('brand.txt', '技能 oh-my-superpowers:brainstorming\n');
+  w('.gitignore', 'node_modules/\n*.log\n');
   const git = (...a) => execFileSync('git', ['-C', root, ...a], { stdio: 'ignore' });
   git('init', '-q'); git('add', '-A');
   git('-c', 'user.email=t@t', '-c', 'user.name=t', 'commit', '-qm', 'init');
