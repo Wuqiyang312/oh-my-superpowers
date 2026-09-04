@@ -109,7 +109,7 @@ node scripts/migrate.mjs apply --categories=a,b [--dry-run] [--backup] [--root <
 |------|------|
 | dry-run 默认 | 不带 `--apply` 只打印改动清单（文件 + 行号 + 前后对照） |
 | 幂等 | 转换后再跑 → "无可迁移项"；目标文件已存在 → 跳过并报冲突，绝不覆盖 |
-| 回滚 | git 仓库依赖 git 历史；`--backup` 生成 `.migrate-backup-<ts>/` |
+| 回滚 | git 仓库依赖 git 历史；`--backup` 在**仓库的上一级目录**生成 `.migrate-backup-<仓库名>-<ts>/`。必须在仓库外：Node 的 `cpSync` 拒绝把目录拷进自身子目录，且备份内含旧路径文本会被下次扫描误判为命中 |
 | 前置检查 | 不在 git 仓库内 → 拒绝。工作区不干净 → 拒绝并提示先 commit |
 | 范围 | 仅文本文件白名单；排除 `.git/`、`node_modules/`、`dist/`、`build/`、备份目录 |
 | 自验证 | `--apply` 后自动 grep 全部旧路径，报告残留 |

@@ -488,10 +488,23 @@ export function apply(root, categories, { dryRun = true, backup = false } = {}) 
   const rewrote = [];
   const moved = [];
   const conflicts = [];
+  let backupDir = null;
 
   if (backup && !dryRun) {
-    const dir = path.join(root, `.migrate-backup-${Date.now()}`);
-    fs.cpSync(root, dir, { recursive: true, filter: (s) => !s.includes('.git') && !s.includes('.migrate-backup-') });
+    // 备份目录必须在 root 之外：Node 的 cpSync 拒绝把目录拷进它自己的子目录
+    // （实测报 "Cannot copy ... to a subdirectory of self"）。
+    // 留在 root 内还有第二个坑：备份里全是旧路径文本，会被下一次 walk 当成命中。
+    backupDir = path.join(path.dirname(root), `.migrate-backup-${path.basename(root)}-${Date.now()}`);
+    try {
+      // filter 必须精确判断。用 !s.includes('.git') 会连带把 .gitignore /
+      // .gitattributes / .gitmodules 一起排除出备份——而备份正是 git 之外的那道保险。
+      fs.cpSync(root, backupDir, {
+        recursive: true,
+        filter: (s) => path.basename(s) !== '.git' && !path.basename(s).startsWith('.migrate-backup-'),
+      });
+    } catch (e) {
+      throw new Error(`备份失败，已中止迁移（在此之前未改动任何文件）：无法写入备份目录 ${backupDir} —— ${e.message}`);
+    }
   }
 
   // 先改文本引用
@@ -534,7 +547,7 @@ export function apply(root, categories, { dryRun = true, backup = false } = {}) 
   if (!dryRun) {
     for (const rel of [...new Set(report.moves.map((m) => m.from.split('/')[0]))]) pruneEmpty(rel);
   }
-  return { rewrote, moved, conflicts, nothing: false };
+  return { rewrote, moved, conflicts, backupDir, nothing: false };
 }
 ```
 
@@ -686,7 +699,9 @@ node scripts/migrate.mjs apply --categories <选中项,逗号分隔> --root <pat
 node scripts/migrate.mjs apply --categories <选中项> --apply --root <path>
 ```
 
-需要额外保险时加 `--backup`，会在仓库根生成 `.migrate-backup-<时间戳>/`。
+需要额外保险时加 `--backup`，会在**仓库的上一级目录**生成 `.migrate-backup-<仓库名>-<时间戳>/`。
+
+（必须落在仓库外：Node 拒绝把目录拷进它自己的子目录；而且备份里全是旧路径文本，留在仓库内会被下一次扫描当成命中。）
 
 目标文件已存在时脚本跳过并记入 `conflicts`，绝不覆盖。
 
@@ -1251,3 +1266,26 @@ git commit -m "docs: record non-blocking audit findings as follow-ups"
 **占位符扫描：** 无"待定"/"TODO"/"补充细节"/"添加适当的错误处理"类表述；所有代码步骤含完整代码块。
 
 **类型一致性：** `rewriteText(text, rules)`、`planFileMove(relPath, root, rules)`、`scan(root, categories)`、`apply(root, categories, { dryRun, backup })`、`preflight(root)`、`walk(root)`、`dateFor(relPath, root)`——导出名与调用处一致；`RULES` / `DIR_MOVES` / `CATEGORIES` / `EXCLUDE_GLOBS` 命名在测试与实现中一致。
+
+---
+
+## 执行期间对计划的修正
+
+任务 1–7 执行完毕，共 7 处偏离计划。**其中 5 处是计划本身的缺陷**，1 处是我的笔误，1 处是测试组织调整。计划正文已就地订正。
+
+| # | 偏差 | 性质 | 不修会怎样 |
+|---|------|------|-----------|
+| 1 | `EXCLUDE_GLOBS` 加 `'**/migrating-docs-layout/**'`，`isExcluded` 改为两段匹配 | 计划缺陷 | 工具扫描并重写自己的源码：`RULES` 里的 `from: '.superpowers/'` 会被改成 `from: '.oh-my-superpowers/'`，**规则表自毁**。实测命中数会从 18/4/7 爆到 33/28/19 |
+| 2 | `walk(root, { textOnly })`，`scan` 拆成 hits（文本）与 moves（全量）两个独立循环 | 计划缺陷 | `.html` 不在 `TEXT_EXT`，`.superpowers/brainstorm/` 里的 HTML 原型永远搬不走——迁移等于没做 |
+| 3 | `--backup` 备份目录改到 `root` 的父目录：`path.join(path.dirname(root), '.migrate-backup-<basename>-<ts>')` | 计划缺陷 | Node 的 `cpSync` 拒绝把目录拷进自身子目录（报 `Cannot copy ... to a subdirectory of self`），**回滚功能从未可用**。原测试无一覆盖该分支，25/25 全绿把它盖住了 |
+| 4 | 备份 `filter` 改为精确判断 `path.basename(s) !== '.git'` | 计划缺陷 | 子串匹配 `!s.includes('.git')` 会把 `.gitignore` / `.gitattributes` / `.gitmodules` 一并排除出备份，而备份正是 git 之外的那道保险 |
+| 5 | `preflight` 的"在 git 仓库内返回 ok"测试改用 `makeFixture()` 而非 `ROOT` | 计划缺陷 | 该断言依赖被测试仓库自身工作区干净，以后任何一次在未提交状态下跑 `node --test` 都会误报 |
+| 6 | `design` 基数从 18 处 / **10** 文件订正为 18 处 / **9** 文件 | 我的笔误 | 设计文档里那张清单表本来就是 9 行，标题写成 10，又抄进了测试断言。旧值之所以能过，是因为工具在扫自己的源码凑数（见 #1） |
+| 7 | `fixtures.test.mjs` 从任务 4 提前到任务 3 创建 | 测试组织 | 无 #5 就无法独立构造干净仓库 |
+
+**已裁定的不修项：**
+
+- `nothing: true` 时 `apply` 返回值不带 `backupDir`（3 态：`nothing:true` 无此键 / `backup:false` 为 `null` / `backup:true` 为字符串）。可接受——计划明文规定了那个返回形状，且 CLI 在 nothing 分支直接 exit、从不序列化该字段，差异永远不可观察。
+- 测试产生的 `migrate-fixture-*` 与 `.migrate-backup-*` 临时目录不清理。泄漏是既有的（`makeFixture()` 从任务 4 起如此，一次测试留 7 个目录），正确修法是套件级 `after` 钩子，属横切改动，不塞进 bug-fix commit。**记为 follow-up。**
+
+**验证状态：** `node --test` 27/27 通过。五个验收数字——`design` 18 处 / 9 文件、`superpowers-docs` 4 处 / 3 文件、`dot-superpowers` 7 处 / 3 文件、`moves` 0、工具目录 0 命中。规格合规审查两轮通过（第一轮发现 #3，复审发现 #3 引入的文档漂移）。
