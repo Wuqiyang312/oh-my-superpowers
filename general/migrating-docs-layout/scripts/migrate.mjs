@@ -25,6 +25,10 @@ const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
  * 逐条 rules 依次 replace 会让 docs/superpowers/design/ 级联成 docs/specs/，故必须单遍。
  */
 export function rewriteText(text, rules = RULES) {
+  // 空规则表不是"无替换"，而是"全量替换"：join('|') 得空串，
+  // new RegExp('', 'g') 匹配每个字符间隙，lookup.get('') 返回 undefined，
+  // 结果是在每个字符之间插入 "undefined"。必须显式返回原文。
+  if (rules.length === 0) return text;
   const ordered = [...rules].sort((a, b) => b.from.length - a.from.length);
   const lookup = new Map(ordered.map((r) => [r.from, r.to]));
   const re = new RegExp(ordered.map((r) => escapeRe(r.from)).join('|'), 'g');
@@ -244,10 +248,27 @@ if (isMain) {
   const [cmd, ...rest] = process.argv.slice(2);
   const arg = (name, dflt = null) => {
     const i = rest.indexOf(`--${name}`);
-    return i === -1 ? dflt : rest[i + 1] ?? true;
+    if (i === -1) return dflt;
+    const v = rest[i + 1];
+    // 缺值或值以 -- 开头都算没给值。以前返回 true，`String(true).split(',')`
+    // 会得到一个不存在的类别 id，进而让规则表过滤成空表。
+    if (v === undefined || v.startsWith('--')) {
+      console.error(`参数 --${name} 缺少取值`);
+      process.exit(2);
+    }
+    return v;
   };
+  // 布尔开关（--apply / --backup）没有取值，不能走 arg()，否则会被判成"缺少取值"。
+  const has = (name) => rest.includes(`--${name}`);
   const root = path.resolve(arg('root', '.'));
   const categories = arg('categories') ? String(arg('categories')).split(',') : null;
+
+  const known = new Set(CATEGORIES.map((c) => c.id));
+  const bad = (categories ?? []).filter((c) => !known.has(c));
+  if (bad.length) {
+    console.error(`未知类别: ${bad.join(', ')}。合法取值: ${[...known].join(', ')}`);
+    process.exit(2);
+  }
 
   if (cmd === 'scan') {
     const pf = preflight(root);
@@ -256,8 +277,8 @@ if (isMain) {
   } else if (cmd === 'apply') {
     const pf = preflight(root);
     if (!pf.ok) { console.error(`拒绝执行：${pf.reason}`); process.exit(1); }
-    const dryRun = !arg('apply', false);
-    const r = apply(root, categories, { dryRun, backup: !!arg('backup') });
+    const dryRun = !has('apply');
+    const r = apply(root, categories, { dryRun, backup: has('backup') });
     if (r.nothing) { console.log('无可迁移项'); process.exit(0); }
     console.log(JSON.stringify(r, null, 2));
   } else {

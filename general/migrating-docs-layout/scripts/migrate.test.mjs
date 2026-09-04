@@ -28,6 +28,12 @@ test('单遍替换，不级联', () => {
   assert.equal(rewriteText('docs/superpowers/design/a.md'), 'docs/design/a.md');
 });
 
+test('空规则表返回原文，不注入 undefined', () => {
+  // 空表时 join('|') 得空串，new RegExp('', 'g') 匹配每个字符间隙、
+  // lookup.get('') 返回 undefined —— 结果是逐字符插入 "undefined"。
+  assert.equal(rewriteText('见 docs/design/foo.md', []), '见 docs/design/foo.md');
+});
+
 import { planFileMove, dateFor } from './migrate.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
