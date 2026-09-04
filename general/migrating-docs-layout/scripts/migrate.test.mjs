@@ -160,3 +160,15 @@ test('只选部分类别时其余部分不被改动', () => {
   assert.ok(fs.existsSync(path.join(root, 'docs/design/foo.md')), 'design 不该被动');
   assert.ok(!fs.existsSync(path.join(root, '.superpowers')), 'dot-superpowers 该被迁');
 });
+
+test('apply --backup 生成可用的备份且不影响迁移结果', () => {
+  const root = makeFixture();
+  const r = apply(root, ['design', 'superpowers-docs', 'dot-superpowers'], { dryRun: false, backup: true });
+  assert.ok(r.backupDir, '应返回备份目录路径');
+  assert.ok(!r.backupDir.startsWith(root), `备份不能在 root 内部：${r.backupDir}`);
+  assert.ok(fs.existsSync(path.join(r.backupDir, 'README.md')), '备份应含迁移前的文件');
+  // 备份里的 README.md 必须是迁移前的内容
+  assert.match(fs.readFileSync(path.join(r.backupDir, 'README.md'), 'utf8'), /docs\/design\//);
+  // 迁移本身仍然正常
+  assert.ok(fs.existsSync(path.join(root, 'docs/specs')));
+});

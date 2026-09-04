@@ -172,10 +172,18 @@ export function apply(root, categories, { dryRun = true, backup = false } = {}) 
   const rewrote = [];
   const moved = [];
   const conflicts = [];
+  let backupDir = null;
 
+  // 备份必须落在 root 之外：Node 拒绝把目录拷进它自己的子目录
+  // （ERR_FS_CP_EINVAL: Cannot copy ... to a subdirectory of self）。
+  // 放进 root 内部还有第二个坑——它装的全是旧路径文本，会被下一次 walk 扫到，报一堆假命中。
   if (backup && !dryRun) {
-    const dir = path.join(root, `.migrate-backup-${Date.now()}`);
-    fs.cpSync(root, dir, { recursive: true, filter: (s) => !s.includes('.git') && !s.includes('.migrate-backup-') });
+    backupDir = path.join(path.dirname(root), `.migrate-backup-${path.basename(root)}-${Date.now()}`);
+    try {
+      fs.cpSync(root, backupDir, { recursive: true, filter: (s) => !s.includes('.git') && !s.includes('.migrate-backup-') });
+    } catch (e) {
+      throw new Error(`备份失败，已中止迁移（在此之前未改动任何文件）：无法写入备份目录 ${backupDir} —— ${e.message}`);
+    }
   }
 
   // 先改文本引用
@@ -218,7 +226,7 @@ export function apply(root, categories, { dryRun = true, backup = false } = {}) 
   if (!dryRun) {
     for (const rel of [...new Set(report.moves.map((m) => m.from.split('/')[0]))]) pruneEmpty(rel);
   }
-  return { rewrote, moved, conflicts, nothing: false };
+  return { rewrote, moved, conflicts, nothing: false, backupDir };
 }
 
 // 必须走 fileURLToPath 比较。直接拿 import.meta.url 拼 `file://${path.resolve(argv[1])}`

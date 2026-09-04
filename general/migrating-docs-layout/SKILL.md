@@ -67,7 +67,9 @@ node scripts/migrate.mjs apply --categories <选中项> --apply --root <path>
 node scripts/migrate.mjs scan --root <path>
 ```
 
-预期输出"无可迁移项"（幂等）。
+预期：所有类别的 `hits` 均为 0（幂等）。
+
+（"无可迁移项"这个字符串是 `apply` 在没有任何可迁移内容时打印的，不是 `scan` 的输出。）
 
 若用户跳过了 `design` 类别，此步骤必须明确提示"链路仍然断裂"，而不是报告完成。
 
