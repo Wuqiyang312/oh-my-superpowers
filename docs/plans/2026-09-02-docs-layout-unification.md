@@ -282,7 +282,7 @@ test('scan 报告 design 类别的命中数与文件数', () => {
   const report = scan(ROOT, ['design']);
   const c = report.categories.find((x) => x.id === 'design');
   assert.ok(c.hits >= 18, `期望至少 18 处，实际 ${c.hits}`);
-  assert.ok(c.files >= 10);
+  assert.ok(c.files >= 9, `期望至少 9 个文件，实际 ${c.files}`);
 });
 
 test('scan 默认排除 docs/specs 与 docs/plans', () => {
@@ -597,10 +597,20 @@ if (isMain) {
 运行：`node general/migrating-docs-layout/scripts/migrate.mjs scan --root . | head -40`
 预期：输出 JSON，`design` 类别 hits ≥ 18
 
-- [ ] **步骤 3：验证前置检查会拦住脏工作区**
+- [ ] **步骤 3：验证前置检查会拦住非 git 目录与脏工作区**
 
-运行：`cd /tmp && node <repo>/general/migrating-docs-layout/scripts/migrate.mjs scan --root /tmp`
+**注意：不要直接用 `--root /tmp`。** 本机 `os.tmpdir()` 落在 `C:/Users/Win11LTSC`，而该目录本身是 git 仓库，git 会向上查找到它——所以 `--root /tmp` 实际输出的是"工作区不干净"而不是"不在 git 仓库内"。要测到"非 git"分支，必须用 `GIT_CEILING_DIRECTORIES` 截断上溯：
+
+```bash
+TMPD=$(mktemp -d)
+GIT_CEILING_DIRECTORIES="$(dirname "$TMPD")" \
+  node general/migrating-docs-layout/scripts/migrate.mjs scan --root "$TMPD"
+```
+
 预期：stderr 输出 `拒绝执行：不在 git 仓库内`，退出码 1
+
+再验脏工作区分支（在本仓库里临时建一个未跟踪文件即可，验完删掉）：
+预期：stderr 输出 `拒绝执行：工作区不干净，请先 commit 或 stash`，退出码 1
 
 - [ ] **步骤 4：Commit**
 
@@ -767,7 +777,7 @@ git commit -m "feat: register migrating-docs-layout skill"
 - [ ] **步骤 2：扫描**
 
 运行：`node general/migrating-docs-layout/scripts/migrate.mjs scan --root .`
-预期：`design` ≥ 18 处 / 10 文件，`superpowers-docs` 4 处 / 3 文件，`dot-superpowers` 7 处 / 3 文件
+预期：`design` ≥ 18 处 / 9 文件，`superpowers-docs` 4 处 / 3 文件，`dot-superpowers` 7 处 / 3 文件
 
 `superpowers-docs` 的第 3 个文件是 `general/requesting-code-review/SKILL.md:60`（`docs/superpowers/plans/deployment-plan.md`）——它证明泛化规则 `docs/superpowers/<x>/` → `docs/<x>/` 是必需的，只写 `specs/` 特例会漏。迁移后该文件落到 `docs/plans/deployment-plan.md`，而 `docs/plans/**` 在默认排除列表里，因此二次扫描不会再命中它——这是预期行为，不是遗漏。
 

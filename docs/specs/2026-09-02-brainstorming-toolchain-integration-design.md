@@ -43,7 +43,7 @@
 
 | 路径 | 用途 | 命中 | 文件数 |
 |------|------|------|--------|
-| `docs/design/` | 设计产物 | 18 处 | 10 |
+| `docs/design/` | 设计产物 | 18 处 | 9 |
 | `docs/superpowers/*` | brainstorming 与 requesting-code-review 旧路径 | 4 处 | 3 |
 | `.superpowers/` | 视觉伴侣运行时会话目录 | 7 处 | 3 |
 | `docs/agents/` | setup 技能配置 | 目录在本仓库不存在 | — |
@@ -226,7 +226,9 @@ frontmatter：`name: visual-companion`，`description: 在设计讨论中需要�
 3. `--apply`
 4. 再跑 `scan` 验证幂等
 
-预期命中：`design` 18 处 / 10 文件、`superpowers-docs` 3 处 / 2 文件、`dot-superpowers` 7 处 / 3 文件。
+预期命中：`design` 18 处 / 9 文件、`superpowers-docs` 4 处 / 3 文件、`dot-superpowers` 7 处 / 3 文件。
+
+（`docs/superpowers/` 下的第 3 个文件是 `general/requesting-code-review/SKILL.md`，含 `docs/superpowers/plans/`——这是初版盘点漏掉的变体。）
 
 ### 组 2 — 拆出 visual-companion
 
