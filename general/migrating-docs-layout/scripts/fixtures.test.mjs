@@ -10,7 +10,7 @@ export function makeFixture() {
     fs.mkdirSync(path.join(root, path.dirname(rel)), { recursive: true });
     fs.writeFileSync(path.join(root, rel), content);
   };
-  w('README.md', '从 docs/design/ 读取，输出到 docs/plans/\n');
+  w('README.md', '从 docs/design/foo.md 读取，输出到 docs/plans/\n');
   w('note.md', '旧路径 docs/superpowers/specs/a.md\n会话在 .superpowers/brainstorm/\n');
   w('docs/design/foo.md', '# foo\n');
   w('docs/superpowers/adr/1.md', '# adr 1\n');

@@ -20,6 +20,9 @@ export const RULES = [
 
 const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+/** 按 from 长度降序排列规则，长模式优先匹配。三处共用，避免同一张表出现两种顺序导致归因错误。 */
+export const orderedRules = (rules) => [...rules].sort((a, b) => b.from.length - a.from.length);
+
 /**
  * 单遍替换：所有规则的 from 合并为一个正则，输出不会被后续规则再次匹配。
  * 逐条 rules 依次 replace 会让 docs/superpowers/design/ 级联成 docs/specs/，故必须单遍。
@@ -29,7 +32,7 @@ export function rewriteText(text, rules = RULES) {
   // new RegExp('', 'g') 匹配每个字符间隙，lookup.get('') 返回 undefined，
   // 结果是在每个字符之间插入 "undefined"。必须显式返回原文。
   if (rules.length === 0) return text;
-  const ordered = [...rules].sort((a, b) => b.from.length - a.from.length);
+  const ordered = orderedRules(rules);
   const lookup = new Map(ordered.map((r) => [r.from, r.to]));
   const re = new RegExp(ordered.map((r) => escapeRe(r.from)).join('|'), 'g');
   return text.replace(re, (m) => lookup.get(m));
@@ -58,8 +61,7 @@ export function dateFor(relPath, root) {
 }
 
 export function planFileMove(relPath, root, rules = DIR_MOVES) {
-  const ordered = [...rules].sort((a, b) => b.from.length - a.from.length);
-  const rule = ordered.find((r) => relPath.startsWith(r.from));
+  const rule = orderedRules(rules).find((r) => relPath.startsWith(r.from));
   if (!rule) return null;
   const rest = relPath.slice(rule.from.length);
   const needsDate =
@@ -124,21 +126,6 @@ export function scan(root, categories = null) {
   const rules = categories ? RULES.filter((r) => categories.includes(r.category)) : RULES;
   const moveRules = categories ? DIR_MOVES.filter((r) => categories.includes(r.category)) : DIR_MOVES;
 
-  // 引用重写只看文本文件
-  const hits = [];
-  for (const rel of walk(root)) {
-    const abs = path.join(root, rel);
-    let text;
-    try { text = fs.readFileSync(abs, 'utf8'); } catch { continue; }
-    text.split('\n').forEach((line, i) => {
-      const after = rewriteText(line, rules);
-      if (after !== line) {
-        const cat = rules.find((r) => line.includes(r.from))?.category;
-        hits.push({ path: rel, line: i + 1, category: cat, before: line, after });
-      }
-    });
-  }
-
   // 移动计划走全量遍历：.superpowers/brainstorm/ 里装的是 HTML 原型，
   // 只按文本文件过滤会把它们落下，目录搬不空、迁移等于没做。
   const moves = [];
@@ -146,6 +133,31 @@ export function scan(root, categories = null) {
     const mv = planFileMove(rel, root, moveRules);
     if (mv) moves.push(mv);
   }
+
+  // 把移动计划转成文件级文本规则，排在目录级规则之前。
+  // 这样"引用重写"与"文件移动"对同一个文件必然给出同一个目标路径：
+  // 顶层 md 搬到 docs/specs/ 时会加日期前缀，而裸的 docs/design/ 目录规则不知道这件事，
+  // 只按目录规则改写会产出指向不存在文件的悬空链接。
+  const fileRules = moves.map((m) => ({ category: m.category, from: m.from, to: m.to }));
+  const textRules = [...fileRules, ...rules];
+  // 命中归因必须用与 rewriteText 相同的顺序，否则同一张表两种顺序会归错类别
+  const orderedTextRules = orderedRules(textRules);
+
+  // 引用重写只看文本文件
+  const hits = [];
+  for (const rel of walk(root)) {
+    const abs = path.join(root, rel);
+    let text;
+    try { text = fs.readFileSync(abs, 'utf8'); } catch { continue; }
+    text.split('\n').forEach((line, i) => {
+      const after = rewriteText(line, textRules);
+      if (after !== line) {
+        const cat = orderedTextRules.find((r) => line.includes(r.from))?.category;
+        hits.push({ path: rel, line: i + 1, category: cat, before: line, after });
+      }
+    });
+  }
+
   const grouped = {};
   for (const h of hits) {
     grouped[h.category] ??= { hits: 0, files: new Set() };

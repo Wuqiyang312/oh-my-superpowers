@@ -179,6 +179,17 @@ test('apply --backup 生成可用的备份且不影响迁移结果', () => {
   assert.ok(fs.existsSync(path.join(root, 'docs/specs')));
 });
 
+test('文件级引用迁移后不指向悬空路径', () => {
+  const root = makeFixture();
+  const r = apply(root, ['design'], { dryRun: false });
+  const mv = r.moved.find((m) => m.from === 'docs/design/foo.md');
+  assert.ok(mv, 'foo.md 应被搬走');
+  const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
+  assert.ok(!readme.includes('docs/design/'), 'README 不应残留旧路径');
+  assert.ok(readme.includes(mv.to), `README 应指向 ${mv.to}，实际：${readme}`);
+  assert.ok(fs.existsSync(path.join(root, mv.to)), `README 指向的 ${mv.to} 必须真实存在`);
+});
+
 test('备份保留 .gitignore 等 dotfile，但仍排除 .git', () => {
   const root = makeFixture();
   const r = apply(root, ['design'], { dryRun: false, backup: true });
