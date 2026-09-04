@@ -38,8 +38,8 @@ export function rewriteText(text, rules = RULES) {
   return text.replace(re, (m) => lookup.get(m));
 }
 
-/** 目录级移动规则。 */
-const DIR_MOVES = [
+/** 目录级移动规则。与 RULES 必须同类别、同前缀，否则改写结果和搬移结果会分叉。 */
+export const DIR_MOVES = [
   { category: 'superpowers-docs', from: 'docs/superpowers/', to: 'docs/' },
   { category: 'design', from: 'docs/design/', to: 'docs/specs/' },
   { category: 'dot-superpowers', from: '.superpowers/', to: '.oh-my-superpowers/' },
@@ -90,6 +90,8 @@ const isExcluded = (rel) =>
       const dir = g.slice(0, -3);
       return rel === dir || rel.startsWith(dir + '/');
     }
+    // 不支持的 glob 形状静默退化成"精确文件名比较"等于排除规则没写还不报错
+    if (g.includes('*')) throw new Error(`不支持的排除 glob（只支持 '<dir>/**' 与 '**/<seg>/**'）：${g}`);
     return rel === g;
   });
 
@@ -182,7 +184,12 @@ export function scan(root, categories = null) {
   };
 }
 
-/** 执行迁移。dryRun 为 true 时只返回计划，不落盘。 */
+/**
+ * 执行迁移。dryRun 为 true 时只返回计划，不落盘。
+ *
+ * **调用方负责先跑 `preflight`**：本函数不做 git 仓库与工作区干净度检查，
+ * 直接调用会绕过唯一的防覆盖闸门。CLI 已经这么做了。
+ */
 export function apply(root, categories, { dryRun = true, backup = false } = {}) {
   const report = scan(root, categories);
   if (report.categories.reduce((n, c) => n + c.hits, 0) === 0) {

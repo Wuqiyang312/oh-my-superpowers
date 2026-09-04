@@ -1,7 +1,7 @@
 // migrate.test.mjs
-import { test } from 'node:test';
+import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { rewriteText, RULES } from './migrate.mjs';
+import { rewriteText, RULES, CATEGORIES, DIR_MOVES } from './migrate.mjs';
 
 test('docs/design/ 替换为 docs/specs/', () => {
   assert.equal(rewriteText('见 docs/design/x.md'), '见 docs/specs/x.md');
@@ -75,8 +75,10 @@ test('dateFor 返回 YYYY-MM-DD', () => {
 });
 
 import { walk, preflight, scan } from './migrate.mjs';
-import { makeFixture } from './fixtures.test.mjs';
+import { makeFixture, makeSandbox, cleanupSandboxes } from './fixtures.test.mjs';
 import { execFileSync } from 'node:child_process';
+
+after(() => cleanupSandboxes());
 
 /** 以子进程跑 CLI，返回 { code, stdout, stderr }。 */
 const SCRIPT = path.join(import.meta.dirname, 'migrate.mjs');
@@ -112,7 +114,7 @@ test('preflight 在非 git 目录返回 false', () => {
   const savedCeiling = process.env.GIT_CEILING_DIRECTORIES;
   process.env.GIT_CEILING_DIRECTORIES = os.tmpdir();
   try {
-    const notGit = fs.mkdtempSync(path.join(os.tmpdir(), 'notgit-'));
+    const notGit = makeSandbox();
     const r = preflight(notGit);
     assert.equal(r.ok, false);
     assert.match(r.reason, /git/);
@@ -245,7 +247,7 @@ test('CLI: --categories 缺取值报 exit 2', () => {
 });
 
 test('CLI: 非 git 目录拒绝执行', () => {
-  const notGit = fs.mkdtempSync(path.join(os.tmpdir(), 'cli-notgit-'));
+  const notGit = makeSandbox();
   const r = runCli(['scan', '--root', notGit], { GIT_CEILING_DIRECTORIES: os.tmpdir() });
   assert.equal(r.code, 1);
   assert.match(r.stderr, /不在 git 仓库内/);
@@ -270,4 +272,20 @@ test('conflicts：目标已存在时源文件留在原地，二次 scan 不归�
   // 引用已改写但文件没搬走 → 移动计划仍在，扫描不归零（SKILL.md 步骤 6 的 hits=0 在此不成立）
   const again = scan(root, ['superpowers-docs']);
   assert.ok(again.categories.reduce((n, c) => n + c.hits, 0) > 0, '冲突残留属预期，需人工处理');
+});
+
+test('RULES 与 DIR_MOVES 的类别集合一致且互相覆盖', () => {
+  // 缺陷 2（文本规则与移动规则对同一文件给出不同目标）就是"改了一半"导致的。
+  // 这三条断言挡住新增/修改规则时只动一张表。
+  const ruleCats = new Set(RULES.map((r) => r.category));
+  const moveCats = new Set(DIR_MOVES.map((r) => r.category));
+  assert.deepEqual([...moveCats].sort(), [...ruleCats].sort(), '两张表的类别集合必须一致');
+  for (const m of DIR_MOVES) {
+    const covered = RULES.some((r) => r.category === m.category && m.from.startsWith(r.from));
+    assert.ok(covered, `移动规则 ${m.from} 缺少对应的文本规则`);
+  }
+  for (const c of CATEGORIES) {
+    assert.ok(ruleCats.has(c.id), `类别 ${c.id} 没有文本规则`);
+    assert.ok(moveCats.has(c.id), `类别 ${c.id} 没有移动规则`);
+  }
 });
