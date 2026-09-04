@@ -70,11 +70,22 @@ export function planFileMove(relPath, root, rules = DIR_MOVES) {
 const TEXT_EXT = new Set(['.md', '.txt', '.json', '.yml', '.yaml', '.sh', '.cjs', '.mjs', '.js', '.ts']);
 const TEXT_NAMES = new Set(['.gitignore', '.gitattributes', '.editorconfig']);
 const EXCLUDE_DIRS = new Set(['.git', 'node_modules', 'dist', 'build', '.next']);
-export const EXCLUDE_GLOBS = ['docs/specs/**', 'docs/plans/**'];
+// 迁移工具自托管在本仓库内：它的规则表里写着旧路径，扫描到自己会把规则表改写掉
+// （`{ from: '.superpowers/' }` → `{ from: '.oh-my-superpowers/' }`），规则表自毁。
+export const EXCLUDE_GLOBS = ['docs/specs/**', 'docs/plans/**', '**/migrating-docs-layout/**'];
 
 const isText = (rel) => TEXT_NAMES.has(path.basename(rel)) || TEXT_EXT.has(path.extname(rel));
 const isExcluded = (rel) =>
-  EXCLUDE_GLOBS.some((g) => rel === g.replace(/\/\*\*$/, '') || rel.startsWith(g.replace(/\/\*\*$/, '') + '/'));
+  EXCLUDE_GLOBS.some((g) => {
+    // '**/<seg>/**'：路径中任一目录段命中即排除（先判这一种——它也以 '/**' 结尾）
+    if (g.startsWith('**/')) return rel.split('/').includes(g.slice(3).replace(/\/\*\*$/, ''));
+    // '<dir>/**'：目录前缀匹配
+    if (g.endsWith('/**')) {
+      const dir = g.slice(0, -3);
+      return rel === dir || rel.startsWith(dir + '/');
+    }
+    return rel === g;
+  });
 
 export function walk(root) {
   const out = [];
@@ -123,6 +134,7 @@ export function scan(root, categories = null) {
     const mv = planFileMove(rel, root, categories ? DIR_MOVES.filter((r) => categories.includes(r.category)) : DIR_MOVES);
     if (mv) moves.push(mv);
   }
+
   const grouped = {};
   for (const h of hits) {
     grouped[h.category] ??= { hits: 0, files: new Set() };

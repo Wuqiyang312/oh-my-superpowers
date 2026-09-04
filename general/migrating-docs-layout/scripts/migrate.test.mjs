@@ -69,6 +69,7 @@ test('dateFor 返回 YYYY-MM-DD', () => {
 });
 
 import { walk, preflight, scan, EXCLUDE_GLOBS } from './migrate.mjs';
+import { makeFixture } from './fixtures.test.mjs';
 
 test('walk 跳过排除目录', () => {
   const files = walk(ROOT);
@@ -76,8 +77,11 @@ test('walk 跳过排除目录', () => {
   assert.ok(files.includes('README.md'));
 });
 
-test('preflight 在 git 仓库内返回 ok', () => {
-  assert.equal(preflight(ROOT).ok, true);
+test('preflight 在干净的 git 仓库内返回 ok', () => {
+  // 用夹具而不是 ROOT：ROOT 就是本仓库，只要它有未提交改动这条就会红，
+  // 会把"仓库脏"误报成"preflight 有 bug"。
+  const clean = makeFixture();
+  assert.equal(preflight(clean).ok, true);
 });
 
 test('preflight 在非 git 目录返回 false', () => {
@@ -101,7 +105,7 @@ test('scan 报告 design 类别的命中数与文件数', () => {
   const report = scan(ROOT, ['design']);
   const c = report.categories.find((x) => x.id === 'design');
   assert.ok(c.hits >= 18, `期望至少 18 处，实际 ${c.hits}`);
-  assert.ok(c.files >= 10);
+  assert.ok(c.files >= 9, `期望至少 9 个文件，实际 ${c.files}`);
 });
 
 test('scan 默认排除 docs/specs 与 docs/plans', () => {
@@ -116,4 +120,11 @@ test('scan 覆盖 docs/superpowers/plans 这个非 specs 子目录', () => {
   const c = report.categories.find((x) => x.id === 'superpowers-docs');
   assert.ok(c.files >= 3, `期望至少 3 个文件（含 requesting-code-review），实际 ${c.files}`);
   assert.ok(report.hits.some((h) => h.path === 'general/requesting-code-review/SKILL.md'));
+});
+
+test('不扫描迁移工具自身的源码', () => {
+  // 守卫：工具自托管在本仓库，规则表里写着旧路径。一旦扫到自己，
+  // apply 会把 RULES 自己改写掉（规则表自毁），且此后任何含旧路径的新规则都会静默复活这个 bug。
+  const report = scan(ROOT, ['design', 'superpowers-docs', 'dot-superpowers']);
+  assert.ok(!report.hits.some((h) => h.path.includes('migrating-docs-layout')));
 });
