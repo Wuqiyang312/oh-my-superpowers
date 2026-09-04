@@ -128,3 +128,35 @@ test('不扫描迁移工具自身的源码', () => {
   const report = scan(ROOT, ['design', 'superpowers-docs', 'dot-superpowers']);
   assert.ok(!report.hits.some((h) => h.path.includes('migrating-docs-layout')));
 });
+
+import { apply } from './migrate.mjs';
+
+test('apply 重写引用并移动文件', () => {
+  const root = makeFixture();
+  const r = apply(root, ['design', 'superpowers-docs', 'dot-superpowers'], { dryRun: false });
+  assert.ok(r.rewrote.includes('README.md'));
+  assert.ok(fs.existsSync(path.join(root, 'docs/specs')));
+  assert.ok(!fs.existsSync(path.join(root, 'docs/design')));
+  assert.ok(fs.existsSync(path.join(root, '.oh-my-superpowers/brainstorm/x.html')));
+  assert.ok(fs.readFileSync(path.join(root, 'brand.txt'), 'utf8').includes('oh-my-superpowers'));
+});
+
+test('apply 后幂等：二次 scan 无命中', () => {
+  const root = makeFixture();
+  apply(root, ['design', 'superpowers-docs', 'dot-superpowers'], { dryRun: false });
+  const report = scan(root, ['design', 'superpowers-docs', 'dot-superpowers']);
+  assert.equal(report.categories.reduce((n, c) => n + c.hits, 0), 0);
+});
+
+test('dryRun 不改动文件系统', () => {
+  const root = makeFixture();
+  apply(root, ['design'], { dryRun: true });
+  assert.ok(fs.existsSync(path.join(root, 'docs/design/foo.md')));
+});
+
+test('只选部分类别时其余部分不被改动', () => {
+  const root = makeFixture();
+  apply(root, ['dot-superpowers'], { dryRun: false });
+  assert.ok(fs.existsSync(path.join(root, 'docs/design/foo.md')), 'design 不该被动');
+  assert.ok(!fs.existsSync(path.join(root, '.superpowers')), 'dot-superpowers 该被迁');
+});

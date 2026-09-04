@@ -87,7 +87,7 @@ const isExcluded = (rel) =>
     return rel === g;
   });
 
-export function walk(root) {
+export function walk(root, { textOnly = true } = {}) {
   const out = [];
   const stack = [''];
   while (stack.length) {
@@ -95,7 +95,7 @@ export function walk(root) {
     for (const e of fs.readdirSync(path.join(root, rel), { withFileTypes: true })) {
       const r = rel ? `${rel}/${e.name}` : e.name;
       if (e.isDirectory()) { if (!EXCLUDE_DIRS.has(e.name)) stack.push(r); }
-      else if (isText(r) && !isExcluded(r)) out.push(r);
+      else if (!isExcluded(r) && (!textOnly || isText(r))) out.push(r);
     }
   }
   return out.sort();
@@ -118,8 +118,10 @@ export function preflight(root) {
 /** 无副作用扫描。categories 为 null 表示全部类别。 */
 export function scan(root, categories = null) {
   const rules = categories ? RULES.filter((r) => categories.includes(r.category)) : RULES;
+  const moveRules = categories ? DIR_MOVES.filter((r) => categories.includes(r.category)) : DIR_MOVES;
+
+  // 引用重写只看文本文件
   const hits = [];
-  const moves = [];
   for (const rel of walk(root)) {
     const abs = path.join(root, rel);
     let text;
@@ -131,10 +133,15 @@ export function scan(root, categories = null) {
         hits.push({ path: rel, line: i + 1, category: cat, before: line, after });
       }
     });
-    const mv = planFileMove(rel, root, categories ? DIR_MOVES.filter((r) => categories.includes(r.category)) : DIR_MOVES);
-    if (mv) moves.push(mv);
   }
 
+  // 移动计划走全量遍历：.superpowers/brainstorm/ 里装的是 HTML 原型，
+  // 只按文本文件过滤会把它们落下，目录搬不空、迁移等于没做。
+  const moves = [];
+  for (const rel of walk(root, { textOnly: false })) {
+    const mv = planFileMove(rel, root, moveRules);
+    if (mv) moves.push(mv);
+  }
   const grouped = {};
   for (const h of hits) {
     grouped[h.category] ??= { hits: 0, files: new Set() };
@@ -154,4 +161,62 @@ export function scan(root, categories = null) {
     hits,
     moves,
   };
+}
+
+/** 执行迁移。dryRun 为 true 时只返回计划，不落盘。 */
+export function apply(root, categories, { dryRun = true, backup = false } = {}) {
+  const report = scan(root, categories);
+  if (report.categories.reduce((n, c) => n + c.hits, 0) === 0) {
+    return { rewrote: [], moved: [], conflicts: [], nothing: true };
+  }
+  const rewrote = [];
+  const moved = [];
+  const conflicts = [];
+
+  if (backup && !dryRun) {
+    const dir = path.join(root, `.migrate-backup-${Date.now()}`);
+    fs.cpSync(root, dir, { recursive: true, filter: (s) => !s.includes('.git') && !s.includes('.migrate-backup-') });
+  }
+
+  // 先改文本引用
+  const byFile = new Map();
+  for (const h of report.hits) {
+    if (!byFile.has(h.path)) byFile.set(h.path, []);
+    byFile.get(h.path).push(h);
+  }
+  for (const [rel, fileHits] of byFile) {
+    const abs = path.join(root, rel);
+    // 按行号精确替换。不能用 split/join——整行字符串可能作为子串出现在更长的行里，
+    // 那样会把不该改的长行一起改掉。
+    const lines = fs.readFileSync(abs, 'utf8').split('\n');
+    for (const h of fileHits) lines[h.line - 1] = h.after;
+    if (!dryRun) fs.writeFileSync(abs, lines.join('\n'));
+    rewrote.push(rel);
+  }
+
+  // 再移动文件/目录
+  for (const mv of report.moves) {
+    const dest = path.join(root, mv.to);
+    if (fs.existsSync(dest)) { conflicts.push(mv); continue; }
+    if (!dryRun) {
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      fs.renameSync(path.join(root, mv.from), dest);
+    }
+    moved.push(mv);
+  }
+
+  // 自底向上清理搬空后的目录。只删空目录；非空目录原样保留。
+  // 必须递归——renameSync 只搬文件，会留下空的中间层目录（如 .superpowers/brainstorm/）。
+  const pruneEmpty = (relDir) => {
+    const abs = path.join(root, relDir);
+    if (!fs.existsSync(abs)) return;
+    for (const e of fs.readdirSync(abs, { withFileTypes: true })) {
+      if (e.isDirectory()) pruneEmpty(relDir ? `${relDir}/${e.name}` : e.name);
+    }
+    try { if (fs.readdirSync(abs).length === 0) fs.rmdirSync(abs); } catch { /* 权限或并发，跳过 */ }
+  };
+  if (!dryRun) {
+    for (const rel of [...new Set(report.moves.map((m) => m.from.split('/')[0]))]) pruneEmpty(rel);
+  }
+  return { rewrote, moved, conflicts, nothing: false };
 }
