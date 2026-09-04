@@ -220,3 +220,36 @@ export function apply(root, categories, { dryRun = true, backup = false } = {}) 
   }
   return { rewrote, moved, conflicts, nothing: false };
 }
+
+// 必须走 fileURLToPath 比较。直接拿 import.meta.url 拼 `file://${path.resolve(argv[1])}`
+// 在 Windows 上不相等（后者是 `file://D:\...`，前者是 `file:///D:/...`），CLI 会永远不触发。
+import { fileURLToPath } from 'node:url';
+
+const isMain = process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
+
+if (isMain) {
+  const [cmd, ...rest] = process.argv.slice(2);
+  const arg = (name, dflt = null) => {
+    const i = rest.indexOf(`--${name}`);
+    return i === -1 ? dflt : rest[i + 1] ?? true;
+  };
+  const root = path.resolve(arg('root', '.'));
+  const categories = arg('categories') ? String(arg('categories')).split(',') : null;
+
+  if (cmd === 'scan') {
+    const pf = preflight(root);
+    if (!pf.ok) { console.error(`拒绝执行：${pf.reason}`); process.exit(1); }
+    console.log(JSON.stringify(scan(root, categories), null, 2));
+  } else if (cmd === 'apply') {
+    const pf = preflight(root);
+    if (!pf.ok) { console.error(`拒绝执行：${pf.reason}`); process.exit(1); }
+    const dryRun = !arg('apply', false);
+    const r = apply(root, categories, { dryRun, backup: !!arg('backup') });
+    if (r.nothing) { console.log('无可迁移项'); process.exit(0); }
+    console.log(JSON.stringify(r, null, 2));
+  } else {
+    console.error('用法: migrate.mjs scan [--root <path>] [--categories a,b]');
+    console.error('      migrate.mjs apply --categories a,b [--apply] [--backup] [--root <path>]');
+    process.exit(2);
+  }
+}
