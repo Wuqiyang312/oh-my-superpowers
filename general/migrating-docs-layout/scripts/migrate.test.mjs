@@ -107,6 +107,16 @@ test('preflight 在非 git 目录返回 false', () => {
   }
 });
 
+test('preflight 在 git status 读不到时 fail closed', () => {
+  // 这是唯一防止覆盖用户未提交改动的闸门，读不到状态必须拒绝而不是放行。
+  // 破坏 .git/index 可以让 rev-parse 仍成功、status 失败。
+  const root = makeFixture();
+  fs.writeFileSync(path.join(root, '.git', 'index'), 'garbage-not-an-index');
+  const r = preflight(root);
+  assert.equal(r.ok, false);
+  assert.match(r.reason, /无法读取 git 工作区状态/);
+});
+
 test('scan 报告 design 类别的命中数与文件数', () => {
   const report = scan(ROOT, ['design']);
   const c = report.categories.find((x) => x.id === 'design');

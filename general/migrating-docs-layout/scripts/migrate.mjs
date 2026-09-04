@@ -116,7 +116,10 @@ export function preflight(root) {
   let dirty = '';
   try {
     dirty = execFileSync('git', ['-C', root, 'status', '--porcelain'], { encoding: 'utf8' }).trim();
-  } catch { /* ignore */ }
+  } catch (e) {
+    // 这是唯一防止覆盖用户未提交改动的闸门，读不到状态时必须拒绝而不是放行
+    return { ok: false, reason: `无法读取 git 工作区状态，已按不安全处理：${e.message}` };
+  }
   if (dirty) return { ok: false, reason: '工作区不干净，请先 commit 或 stash' };
   return { ok: true };
 }
