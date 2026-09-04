@@ -74,8 +74,23 @@ test('dateFor 返回 YYYY-MM-DD', () => {
   assert.match(dateFor('README.md', ROOT), /^\d{4}-\d{2}-\d{2}$/);
 });
 
-import { walk, preflight, scan, EXCLUDE_GLOBS } from './migrate.mjs';
+import { walk, preflight, scan } from './migrate.mjs';
 import { makeFixture } from './fixtures.test.mjs';
+import { execFileSync } from 'node:child_process';
+
+/** 以子进程跑 CLI，返回 { code, stdout, stderr }。 */
+const SCRIPT = path.join(import.meta.dirname, 'migrate.mjs');
+const runCli = (args, env = {}) => {
+  try {
+    const stdout = execFileSync(process.execPath, [SCRIPT, ...args], {
+      encoding: 'utf8',
+      env: { ...process.env, ...env },
+    });
+    return { code: 0, stdout, stderr: '' };
+  } catch (e) {
+    return { code: e.status, stdout: e.stdout ?? '', stderr: e.stderr ?? '' };
+  }
+};
 
 test('walk 跳过排除目录', () => {
   const files = walk(ROOT);
@@ -117,11 +132,17 @@ test('preflight 在 git status 读不到时 fail closed', () => {
   assert.match(r.reason, /无法读取 git 工作区状态/);
 });
 
-test('scan 报告 design 类别的命中数与文件数', () => {
-  const report = scan(ROOT, ['design']);
-  const c = report.categories.find((x) => x.id === 'design');
-  assert.ok(c.hits >= 18, `期望至少 18 处，实际 ${c.hits}`);
-  assert.ok(c.files >= 9, `期望至少 9 个文件，实际 ${c.files}`);
+test('scan 在夹具上给出精确命中数', () => {
+  // 断言写在夹具上而不是 ROOT：本仓库迁移完成后 ROOT 的命中数会归零，
+  // 绑死在仓库快照上的断言会在迁移当天变红。夹具内容确定，可以断言精确值。
+  const report = scan(makeFixture());
+  const byId = Object.fromEntries(report.categories.map((c) => [c.id, c]));
+  for (const id of ['design', 'superpowers-docs', 'dot-superpowers']) {
+    assert.equal(byId[id].hits, 2, `${id} 命中数（1 条引用 + 1 个待搬文件）`);
+    assert.equal(byId[id].files, 2, `${id} 文件数`);
+  }
+  assert.equal(report.hits.length, 3);
+  assert.equal(report.moves.length, 3);
 });
 
 test('scan 默认排除 docs/specs 与 docs/plans', () => {
@@ -208,4 +229,45 @@ test('备份保留 .gitignore 等 dotfile，但仍排除 .git', () => {
   assert.equal(fs.readFileSync(bak, 'utf8'), 'node_modules/\n*.log\n');
   // filter 必须同时守住另一半：.git 目录仍然不进备份
   assert.ok(!fs.existsSync(path.join(r.backupDir, '.git')), '备份不应含 .git 目录');
+});
+
+test('CLI: 未知类别 id 报 exit 2 并列出合法取值', () => {
+  const r = runCli(['scan', '--root', makeFixture(), '--categories', 'designx']);
+  assert.equal(r.code, 2);
+  assert.match(r.stderr, /未知类别: designx/);
+  assert.match(r.stderr, /design, superpowers-docs, dot-superpowers/);
+});
+
+test('CLI: --categories 缺取值报 exit 2', () => {
+  const r = runCli(['scan', '--root', makeFixture(), '--categories']);
+  assert.equal(r.code, 2);
+  assert.match(r.stderr, /参数 --categories 缺少取值/);
+});
+
+test('CLI: 非 git 目录拒绝执行', () => {
+  const notGit = fs.mkdtempSync(path.join(os.tmpdir(), 'cli-notgit-'));
+  const r = runCli(['scan', '--root', notGit], { GIT_CEILING_DIRECTORIES: os.tmpdir() });
+  assert.equal(r.code, 1);
+  assert.match(r.stderr, /不在 git 仓库内/);
+});
+
+test('CLI: 干净仓库 scan 输出合法 JSON 且退出 0', () => {
+  const r = runCli(['scan', '--root', makeFixture()]);
+  assert.equal(r.code, 0);
+  const j = JSON.parse(r.stdout);
+  assert.equal(j.categories.reduce((n, c) => n + c.hits, 0), 6);
+  assert.equal(j.moves.length, 3);
+});
+
+test('conflicts：目标已存在时源文件留在原地，二次 scan 不归零', () => {
+  const root = makeFixture();
+  // 预置目标文件制造冲突
+  fs.mkdirSync(path.join(root, 'docs/adr'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'docs/adr/1.md'), '已存在\n');
+  const r = apply(root, ['superpowers-docs'], { dryRun: false });
+  assert.ok(r.conflicts.some((c) => c.from === 'docs/superpowers/adr/1.md'), '应记入 conflicts');
+  assert.ok(fs.existsSync(path.join(root, 'docs/superpowers/adr/1.md')), '源文件应留在原地');
+  // 引用已改写但文件没搬走 → 移动计划仍在，扫描不归零（SKILL.md 步骤 6 的 hits=0 在此不成立）
+  const again = scan(root, ['superpowers-docs']);
+  assert.ok(again.categories.reduce((n, c) => n + c.hits, 0) > 0, '冲突残留属预期，需人工处理');
 });
