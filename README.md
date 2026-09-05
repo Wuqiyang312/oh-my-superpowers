@@ -12,14 +12,28 @@ npx skills@latest add Wuqiyang312/oh-my-superpowers
 
 ### 端到端模式
 
-**模式 1（设计 + 计划）：**
-1. `/grill-with-docs` — 拷问想法，打磨术语，输出 `CONTEXT.md` + `docs/adr/` + `docs/specs/`
-2. `/writing-plans` — 从 `docs/specs/` 读取，输出 `docs/plans/`
+两条设计入口共用同一条下游链路：
 
-**模式 2（设计 + 计划 + 执行）：**
-1. `/grill-with-docs` — 同上
-2. `/writing-plans` — 同上
-3. `/executing-plans` — 从 `docs/plans/` 读取，多智能体并行执行
+```
+   从零想法     ──►  brainstorming    ─┐
+                                       │
+   已有领域模型 ──►  grill-with-docs  ─┴──►  docs/specs/
+                                                   │
+                                                   ▼
+                                             writing-plans
+                                                   │
+                                                   ▼
+                                              docs/plans/
+                                                   │
+                                                   ▼
+                                            executing-plans
+```
+
+**模式 1（设计 + 计划）：** 任选一条设计入口 → `/writing-plans`
+**模式 2（设计 + 计划 + 执行）：** 任选一条设计入口 → `/writing-plans` → `/executing-plans`
+
+- `/brainstorming` —— 从零想法出发，产出 `docs/specs/YYYY-MM-DD-<topic>.md`
+- `/grill-with-docs` —— 已有领域模型，对照 `CONTEXT.md` + `docs/adr/` 打磨术语，产出 `docs/specs/YYYY-MM-DD-<feature>.md`
 
 ### 统一 docs 目录
 

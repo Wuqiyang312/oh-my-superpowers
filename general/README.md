@@ -29,11 +29,17 @@
 ## 工具链
 
 ```
-grill-with-docs → writing-plans → executing-plans
-       │              │
-       ├─ docs/specs/ │
-       └─ CONTEXT.md   └─ docs/plans/
-           + ADR
+                    ┌─ brainstorming ──► docs/specs/ ──┐
+                    │                                  │
+                    └─ grill-with-docs ────────────────┤
+                                                       ▼
+                                                  writing-plans
+                                                       │
+                                                       ▼
+                                                   docs/plans/
+                                                       │
+                                                       ▼
+                                                 executing-plans
 
 caveman (自动压缩) → 贯穿整个链路
 ```
