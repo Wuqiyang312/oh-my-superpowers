@@ -226,6 +226,14 @@ test('apply 不搬移带标记的文件，对照文件照常搬走', () => {
   assert.ok(!fs.existsSync(path.join(root, 'docs/design/control-move.md')), '对照文件应已搬走');
 });
 
+test('visual-companion 的旧路径提示留在扫描视野之外', () => {
+  // 与"不扫描迁移工具自身源码"同一类守卫，但走文件级标记而不是目录排除：
+  // 那个文件必须引用 `.superpowers/` 才能教 agent 认出尚未迁移的项目，
+  // 而同目录下其他内容该迁还得迁，不能整个目录一起排除掉。
+  const report = scan(ROOT, ['design', 'superpowers-docs', 'dot-superpowers']);
+  assert.ok(!report.hits.some((h) => h.path.includes('visual-companion')), 'visual-companion 应由文件级标记豁免');
+});
+
 import { apply } from './migrate.mjs';
 
 test('apply 重写引用并移动文件', () => {

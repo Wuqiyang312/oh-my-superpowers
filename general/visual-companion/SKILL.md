@@ -3,6 +3,9 @@ name: visual-companion
 description: 在设计讨论中需要用浏览器展示原型、线框图、布局对比或图表时使用。需要 node 环境并开放本地端口。
 ---
 
+<!-- migrate:ignore -->
+<!-- 豁免原因：下面"启动会话"一节必须保留旧路径 `.superpowers/`——它靠这个旧路径教 agent 认出尚未迁移的项目，被 migrating-docs-layout 改写成 `.oh-my-superpowers/` 之后整句话就失去意义了。 -->
+
 # 视觉伴侣指南
 
 基于浏览器的视觉头脑风暴伴侣，用于展示原型、图表和选项。
