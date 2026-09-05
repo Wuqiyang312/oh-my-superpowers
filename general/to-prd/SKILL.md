@@ -5,7 +5,7 @@ description: 将当前对话上下文转换为 PRD 并发布到项目 issue 跟�
 
 该 skill 获取当前对话上下文和对代码库的理解，生成一份 PRD。不要向用户进行访谈——只需综合你已了解的信息。
 
-issue 跟踪器和分类标签词汇表应当已经提供给你——如果没有，请运行 `/setup-matt-pocock-skills`。
+issue 跟踪器和分类标签词汇表应当已经提供给你——如果没有，请运行 `/setup-oh-my-superpowers`。
 
 ## 流程
 

@@ -7,7 +7,7 @@ description: 使用 tracer-bullet 垂直切片将计划、规格或 PRD 拆分�
 
 使用垂直切片（tracer bullets）将计划拆分为可独立领取的 issue。
 
-issue 跟踪器和分类标签词汇表应当已经提供给你——如果没有，请运行 `/setup-matt-pocock-skills`。
+issue 跟踪器和分类标签词汇表应当已经提供给你——如果没有，请运行 `/setup-oh-my-superpowers`。
 
 ## 流程
 
