@@ -1,6 +1,6 @@
 ---
 name: improve-codebase-architecture
-description: 在代码库中寻找"加深"机会，参考 AGENTS.md 中的领域语言和 docs/adr/ 中的决策。当用户希望改进架构、寻找重构机会、合并紧耦合模块，或使代码库更易测试、更易被 AI 导航时使用。
+description: 在代码库中寻找"加深"机会，参考 CONTEXT.md 中的领域语言和 docs/adr/ 中的决策。当用户希望改进架构、寻找重构机会、合并紧耦合模块，或使代码库更易测试、更易被 AI 导航时使用。
 ---
 
 # 改进代码库架构
@@ -53,7 +53,7 @@ description: 在代码库中寻找"加深"机会，参考 AGENTS.md 中的领域
 - **解决方案** — 将发生什么的纯文字描述
 - **益处** — 用局部性和杠杆效应来解释，并说明测试将如何改善
 
-**使用 AGENTS.md 的词汇来描述领域，使用 [LANGUAGE.md](LANGUAGE.md) 的词汇来描述架构。** 如果 `AGENTS.md` 定义了"Order"，就讨论"Order 摄入模块"——而不是"FooBarHandler"，也不是"Order 服务"。
+**使用 CONTEXT.md 的词汇来描述领域，使用 [LANGUAGE.md](LANGUAGE.md) 的词汇来描述架构。** 如果 `CONTEXT.md` 定义了"Order"，就讨论"Order 摄入模块"——而不是"FooBarHandler"，也不是"Order 服务"。
 
 **ADR 冲突**：如果某个候选方案与现有 ADR 矛盾，仅当摩擦大到值得重新审视 ADR 时才提出。清楚地标记它（例如 _"与 ADR-0007 矛盾——但值得重新打开，因为…"_）。不要列出 ADR 禁止的每一个理论上的重构。
 
@@ -65,7 +65,7 @@ description: 在代码库中寻找"加深"机会，参考 AGENTS.md 中的领域
 
 决策逐渐明确时，副作用会内联发生：
 
-- **将加深后的模块命名为 AGENTS.md 中不存在的新概念？** 将术语添加到 `AGENTS.md`——遵循与 `/grill-with-docs` 相同的纪律（参见 [CONTEXT-FORMAT.md](../grill-with-docs/CONTEXT-FORMAT.md)）。如果文件不存在，则惰性创建。
-- **在对话中澄清了一个模糊的术语？** 当场更新 `AGENTS.md`。
+- **将加深后的模块命名为 CONTEXT.md 中不存在的新概念？** 将术语添加到 `CONTEXT.md`——遵循与 `/grill-with-docs` 相同的纪律（参见 [CONTEXT-FORMAT.md](../grill-with-docs/CONTEXT-FORMAT.md)）。如果文件不存在，则惰性创建。
+- **在对话中澄清了一个模糊的术语？** 当场更新 `CONTEXT.md`。
 - **用户以一个有分量的理由拒绝了候选方案？** 提议一个 ADR，措辞为：_"要不要我把这个记录为 ADR，这样未来的架构审查就不会再建议它了？"_ 仅当该理由确实会被未来的探索者用来避免重复建议时才提议——跳过短暂的理由（"现在不值得"）和不言自明的理由。参见 [ADR-FORMAT.md](../grill-with-docs/ADR-FORMAT.md)。
 - **想为加深后的模块探索替代接口？** 参见 [INTERFACE-DESIGN.md](INTERFACE-DESIGN.md)。

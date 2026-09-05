@@ -7,7 +7,7 @@ description: 根据现有领域模型挑战你的方案，打磨术语，并在�
 
 grill 期间：用压缩格式提问和记录。砍掉废话、填充词、客套话。保留技术精确性。减少 token 消耗 -> 降低历史压缩丢失关键决策的风险。
 
-具体：简短提问，直接记录术语/决策到 AGENTS.md/docs/agents/ADR，不使用"Could you help me understand..."之类客套。
+具体：简短提问，直接记录术语到 CONTEXT.md、决策到 ADR、配置到 docs/agents/，不使用"Could you help me understand..."之类客套。
 
 </caveman>
 
@@ -33,7 +33,7 @@ grill 期间：用压缩格式提问和记录。砍掉废话、填充词、客�
 
 ```
 /
-├── AGENTS.md
+├── CONTEXT.md
 ├── docs/
 │   ├── agents/
 │   │   ├── issue-tracker.md
@@ -49,26 +49,26 @@ grill 期间：用压缩格式提问和记录。砍掉废话、填充词、客�
 
 ```
 /
-├── AGENTS.md
+├── CONTEXT.md
 ├── docs/
 │   ├── agents/                       ← 全系统配置
 │   └── adr/                          ← 全系统范围的决策
 ├── src/
 │   ├── ordering/
-│   │   ├── AGENTS.md
+│   │   ├── CONTEXT.md
 │   │   └── docs/adr/                 ← 上下文特定的决策
 │   └── billing/
-│       ├── AGENTS.md
+│       ├── CONTEXT.md
 │       └── docs/adr/
 ```
 
-惰性创建文件——只在有内容可写时才创建。如果不存在 `AGENTS.md`，在第一个术语被解析时创建。如果不存在 `docs/agents/`，在需要第一个配置文件时创建。如果不存在 `docs/adr/`，在需要第一个 ADR 时创建。
+惰性创建文件——只在有内容可写时才创建。如果不存在 `CONTEXT.md`，在第一个术语被解析时创建。如果不存在 `docs/agents/`，在需要第一个配置文件时创建。如果不存在 `docs/adr/`，在需要第一个 ADR 时创建。
 
 ## 会话期间
 
 ### 对照术语表进行挑战
 
-当用户使用的术语与 `AGENTS.md` 中现有语言冲突时，立即指出。"你的术语表将 'cancellation' 定义为 X，但你似乎指的是 Y——到底是哪个？"
+当用户使用的术语与 `CONTEXT.md` 中现有语言冲突时，立即指出。"你的术语表将 'cancellation' 定义为 X，但你似乎指的是 Y——到底是哪个？"
 
 ### 打磨模糊语言
 
@@ -82,11 +82,11 @@ grill 期间：用压缩格式提问和记录。砍掉废话、填充词、客�
 
 当用户说明某物如何工作时，检查代码是否一致。如果你发现矛盾，提出来："你的代码取消了整个 Order，但你刚说部分取消是可能的——哪个是对的？"
 
-### 即时更新 AGENTS.md
+### 即时更新 CONTEXT.md
 
-当一个术语被解析时，立即更新 `AGENTS.md`。不要批量处理——发生时就捕获。使用 [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md) 中的格式。
+当一个术语被解析时，立即更新 `CONTEXT.md`。不要批量处理——发生时就捕获。使用 [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md) 中的格式。
 
-`AGENTS.md` 应该完全没有实现细节。不要把 `AGENTS.md` 当作规格说明书、草稿纸或实现决策的仓库。它只是一个术语表，仅此而已。
+`CONTEXT.md` 应该完全没有实现细节。不要把 `CONTEXT.md` 当作规格说明书、草稿纸或实现决策的仓库。它只是一个术语表，仅此而已。
 
 ### 输出设计文档
 
@@ -113,7 +113,7 @@ grilling session 结束后，产出一份 `docs/specs/YYYY-MM-DD-<feature>.md` �
 - 为什么选 A 而不是 B
 
 ## 相关文档
-- 引用的 AGENTS.md 术语
+- 引用的 CONTEXT.md 术语
 - 相关的 ADR
 ```
 
