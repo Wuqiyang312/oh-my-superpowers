@@ -42,7 +42,7 @@ docs/
 ├── CONTEXT.md              # 领域术语表（grill-with-docs 产出）
 ├── adr/                    # 设计决策（grill-with-docs 产出）
 │   └── 0001-xxx.md
-├── design/                 # 设计概要（grill-with-docs 产出）
+├── specs/                  # 设计概要（brainstorming 或 grill-with-docs 产出）
 │   └── YYYY-MM-DD-feature.md
 └── plans/                  # 执行计划（writing-plans 产出）
     └── YYYY-MM-DD-feature.md
@@ -54,7 +54,7 @@ docs/
 
 | 技能 | 描述 |
 |------|------|
-| [grill-with-docs](./general/grill-with-docs/SKILL.md) | 拷问设计，打磨术语，输出 CONTEXT.md、ADR 和 design 文档 |
+| [grill-with-docs](./general/grill-with-docs/SKILL.md) | 拷问设计，打磨术语，输出 CONTEXT.md、ADR 和设计文档 |
 | [grill-me](./general/grill-me/SKILL.md) | 对你计划的每个方面进行 relentless 的访谈 |
 | [writing-plans](./general/writing-plans/SKILL.md) | 从设计文档生成可执行计划 |
 | [executing-plans](./general/executing-plans/SKILL.md) | 多/单智能体并发执行实现计划，两阶段审查 |

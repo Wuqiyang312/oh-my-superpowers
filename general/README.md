@@ -4,7 +4,7 @@
 
 | 技能 | 描述 |
 |------|------|
-| [grill-with-docs](./grill-with-docs/SKILL.md) | 拷问设计，打磨术语，输出 CONTEXT.md、ADR 和 design 文档 |
+| [grill-with-docs](./grill-with-docs/SKILL.md) | 拷问设计，打磨术语，输出 CONTEXT.md、ADR 和设计文档 |
 | [grill-me](./grill-me/SKILL.md) | 对你计划的每个方面进行 relentless 的访谈 |
 | [writing-plans](./writing-plans/SKILL.md) | 从设计文档生成可执行计划 |
 | [executing-plans](./executing-plans/SKILL.md) | 多/单智能体执行实现计划，两阶段审查 |
