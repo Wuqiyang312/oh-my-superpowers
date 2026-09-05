@@ -44,7 +44,7 @@ disable-model-invocation: true
 
 **部分 C —— 工具链模式。**
 
-- **模式 1：设计 + 计划** —— grill-with-docs → writing-plans，产出 design/ 和 plans/
+- **模式 1：设计 + 计划** —— grill-with-docs → writing-plans，产出 specs/ 和 plans/
 - **模式 2：设计 + 计划 + 执行** —— 全链路，包含 executing-plans 执行
 
 ### 3. 确认并编辑
