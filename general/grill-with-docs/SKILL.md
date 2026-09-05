@@ -49,7 +49,7 @@ grill 期间：用压缩格式提问和记录。砍掉废话、填充词、客�
 
 ```
 /
-├── CONTEXT.md
+├── CONTEXT-MAP.md
 ├── docs/
 │   ├── agents/                       ← 全系统配置
 │   └── adr/                          ← 全系统范围的决策

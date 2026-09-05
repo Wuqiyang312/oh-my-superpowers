@@ -14,15 +14,21 @@
 
 ## 端到端工具链
 
-```
-模式 1: grill-with-docs → writing-plans
-模式 2: grill-with-docs → writing-plans → executing-plans
+两条设计入口共用同一条下游链路：
+
+模式 1（设计 + 计划）：任选一条设计入口 → `writing-plans`
+模式 2（设计 + 计划 + 执行）：任选一条设计入口 → `writing-plans` → `executing-plans`
+
+- `brainstorming` —— 从零想法出发，产出 `docs/specs/YYYY-MM-DD-<feature>.md`
+- `grill-with-docs` —— 已有领域模型，对照 `CONTEXT.md` + `docs/adr/` 打磨术语，产出 `docs/specs/YYYY-MM-DD-<feature>.md`
 
 统一 docs/ 目录:
-  AGENTS.md           (核心记录文件，引导智能体阅读 docs/agents/)
+
+```
+  AGENTS.md           (引导文件：告诉 agent 接下来读 CLAUDE.md / CONTEXT.md / docs/agents/)
+  CONTEXT.md          (领域术语表)
   docs/agents/        (配置文件目录)
   docs/adr/           (设计决策)
   docs/specs/         (设计概要)
   docs/plans/         (执行计划)
-  docs/agents/        (agent 配置：issue tracker、domain、toolchain)
 ```
