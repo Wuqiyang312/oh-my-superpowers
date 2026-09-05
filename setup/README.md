@@ -4,7 +4,8 @@
 
 | 技能 | 描述 |
 |------|------|
-| [using-oh-my-superpowers](./using-oh-my-superpowers/SKILL.md) | 对话引导 / bootstrap |
+| [using-oh-my-superpowers](./using-oh-my-superpowers/SKILL.md) | 根据用户真实意图路由到对应技能 |
+| [using-oh-my-superpowers-chinese](./using-oh-my-superpowers-chinese/SKILL.md) | 中文项目和国内团队场景路由优化 |
 | [setup-oh-my-superpowers](./setup-oh-my-superpowers/SKILL.md) | per-repo 配置安装 |
 
 ## 首次使用流程

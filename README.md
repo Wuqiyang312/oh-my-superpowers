@@ -39,7 +39,11 @@ npx skills@latest add Wuqiyang312/oh-my-superpowers
 
 ```
 docs/
-├── CONTEXT.md              # 领域术语表（grill-with-docs 产出）
+├── AGENTS.md              # 核心记录文件（引导智能体阅读 docs/agents/）
+├── agents/                # 配置文件目录（setup-oh-my-superpowers 产出）
+│   ├── issue-tracker.md
+│   ├── domain.md
+│   └── toolchain.md
 ├── adr/                    # 设计决策（grill-with-docs 产出）
 │   └── 0001-xxx.md
 ├── specs/                  # 设计概要（brainstorming 或 grill-with-docs 产出）
@@ -90,7 +94,8 @@ docs/
 
 | 技能 | 描述 |
 |------|------|
-| [using-oh-my-superpowers](./setup/using-oh-my-superpowers/SKILL.md) | 对话引导 / bootstrap |
+| [using-oh-my-superpowers](./setup/using-oh-my-superpowers/SKILL.md) | 根据用户真实意图路由到对应技能 |
+| [using-oh-my-superpowers-chinese](./setup/using-oh-my-superpowers-chinese/SKILL.md) | 中文项目和国内团队场景路由优化 |
 | [setup-oh-my-superpowers](./setup/setup-oh-my-superpowers/SKILL.md) | per-repo 配置安装 |
 
 ## 许可

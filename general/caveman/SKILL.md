@@ -39,7 +39,7 @@ description: >
 
 ### grill-with-docs 期间
 - 提问用压缩格式
-- 术语/决策直接记录到 CONTEXT.md/ADR，不提多余问题
+- 术语/决策直接记录到 AGENTS.md/ADR，不提多余问题
 - 会话间同步使用箭头格式记录关系
 
 ### writing-plans 期间
