@@ -32,7 +32,7 @@ npx skills@latest add Wuqiyang312/oh-my-superpowers
 **模式 1（设计 + 计划）：** 任选一条设计入口 → `/writing-plans`
 **模式 2（设计 + 计划 + 执行）：** 任选一条设计入口 → `/writing-plans` → `/executing-plans`
 
-- `/brainstorming` —— 从零想法出发，产出 `docs/specs/YYYY-MM-DD-<topic>.md`
+- `/brainstorming` —— 从零想法出发，产出 `docs/specs/YYYY-MM-DD-<feature>.md`
 - `/grill-with-docs` —— 已有领域模型，对照 `CONTEXT.md` + `docs/adr/` 打磨术语，产出 `docs/specs/YYYY-MM-DD-<feature>.md`
 
 ### 统一 docs 目录

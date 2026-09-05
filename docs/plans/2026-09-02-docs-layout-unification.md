@@ -8,7 +8,7 @@
 
 **技术栈：** Node 24+ ESM（`node:test` + `node:assert` 内置测试，零第三方依赖）、`git mv`、纯文本处理。
 
-**规格来源：** `docs/specs/2026-09-02-brainstorming-toolchain-integration-design.md`
+**规格来源：** `docs/specs/2026-09-02-brainstorming-toolchain-integration.md`
 
 **分两阶段：** 阶段一（任务 1–20）为可独立交付的垂直切片；阶段二（任务 21–27）审计必须等阶段一完成，否则会把"还没迁"误报成"迁移遗漏"。
 
@@ -1016,7 +1016,7 @@ git commit -m "feat: register visual-companion and fix brainstorming description
 **模式 1（设计 + 计划）：** 任选一条设计入口 → `/writing-plans`
 **模式 2（设计 + 计划 + 执行）：** 任选一条设计入口 → `/writing-plans` → `/executing-plans`
 
-- `/brainstorming` —— 从零想法出发，产出 `docs/specs/YYYY-MM-DD-<topic>.md`
+- `/brainstorming` —— 从零想法出发，产出 `docs/specs/YYYY-MM-DD-<feature>.md`
 - `/grill-with-docs` —— 已有领域模型，对照 `CONTEXT.md` + `docs/adr/` 打磨术语，产出 `docs/specs/YYYY-MM-DD-<feature>.md`
 ```
 
@@ -1114,7 +1114,7 @@ git commit -m "docs: update docs tree to docs/specs in CONTEXT.md and CLAUDE.md"
 只报告：你会把设计文档写到哪个具体路径？不要真的创建文件。
 ```
 
-预期：回答 `docs/specs/YYYY-MM-DD-<topic>.md`，不是 `docs/superpowers/specs/` 或 `docs/design/`
+预期：回答 `docs/specs/YYYY-MM-DD-<feature>.md`，不是 `docs/superpowers/specs/` 或 `docs/design/`
 
 - [ ] **步骤 3：若任一项不通过，回到对应任务修补 SKILL.md 后重测**
 

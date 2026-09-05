@@ -152,13 +152,20 @@ test('scan 默认排除 docs/specs 与 docs/plans', () => {
   assert.ok(!report.hits.some((h) => h.path.startsWith('docs/specs/')));
 });
 
-test('scan 覆盖 docs/superpowers/plans 这个非 specs 子目录', () => {
-  // 回归守卫：general/requesting-code-review/SKILL.md 里有 docs/superpowers/plans/。
-  // 只为 specs/ 写特例规则会漏掉它，所以规则必须泛化成 docs/superpowers/<x>/。
-  const report = scan(ROOT, ['superpowers-docs']);
-  const c = report.categories.find((x) => x.id === 'superpowers-docs');
-  assert.ok(c.files >= 3, `期望至少 3 个文件（含 requesting-code-review），实际 ${c.files}`);
-  assert.ok(report.hits.some((h) => h.path === 'general/requesting-code-review/SKILL.md'));
+test('docs/superpowers/<x>/ 泛化：非 specs 子目录也能正确归位', () => {
+  // 回归守卫：规则必须泛化成 docs/superpowers/<x>/ → docs/<x>/，
+  // 只为 specs/ 写特例会漏掉 adr/、plans/ 等其他子目录。
+  //
+  // 不依赖本仓库内容——迁移完成后 ROOT 里已无 docs/superpowers/ 引用，
+  // 绑死在仓库快照上的断言会在迁移当天变红。
+  const root = makeFixture();
+  assert.equal(planFileMove('docs/superpowers/specs/a.md', root).to, 'docs/specs/a.md');
+  assert.equal(planFileMove('docs/superpowers/adr/1.md', root).to, 'docs/adr/1.md');
+
+  // 落盘验证：夹具里的 adr 子目录必须真的搬到 docs/adr/ 下
+  apply(root, ['superpowers-docs'], { dryRun: false });
+  assert.ok(fs.existsSync(path.join(root, 'docs/adr/1.md')), 'adr 子目录应归位到 docs/adr/');
+  assert.ok(!fs.existsSync(path.join(root, 'docs/superpowers/adr/1.md')), '原位置应已搬空');
 });
 
 test('不扫描迁移工具自身的源码', () => {
