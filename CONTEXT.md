@@ -11,15 +11,15 @@ grill-with-docs → writing-plans → executing-plans 组成的完整工具链�
 _避免使用_：pipeline、workflow chain
 
 **设计文档（Design Doc）**：
-`docs/specs/<feature>.md`，grill-with-docs 产出的结构化规格文档，包含目标、范围、验收标准、边界情况和关键决策。
-_避免使用_：spec、需求文档、PRD
+`docs/specs/YYYY-MM-DD-<feature>.md`，`brainstorming` 或 `grill-with-docs` 产出的结构化规格文档，包含目标、范围、验收标准、边界情况和关键决策。
+_避免使用_：spec 作为文档类型名称——目录名 `docs/specs/` 是沿用路径，文档本身的术语是"设计文档"
 
 **执行计划（Execution Plan）**：
 `docs/plans/<feature>.md`，writing-plans 产出的可执行实现计划，包含任务拆分、文件列表和步骤。
 _避免使用_：task list、todo list
 
 **统一 docs 目录（Unified Docs Directory）**：
-`CONTEXT.md` + `docs/adr/` + `docs/specs/` + `docs/plans/` 组成的标准文档结构，确保工具链各阶段通过文件系统交接。
+`CONTEXT.md` + `docs/adr/` + `docs/specs/` + `docs/plans/` + `docs/agents/` 组成的标准文档结构，确保工具链各阶段通过文件系统交接。
 
 ## 关系
 
