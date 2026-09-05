@@ -280,7 +280,7 @@ wc -w skills/path/SKILL.md
 
 仅使用技能名称，带有明确的必需标记：
 - ✅ 好的：`**必需子技能：** 使用 oh-my-superpowers:test-driven-development`
-- ✅ 好的：`**必需背景：** 你必须理解 oh-my-superpowers:systematic-debugging`
+- ✅ 好的：`**必需背景：** 你必须理解 oh-my-superpowers:diagnose`
 - ❌ 差的：`参见 skills/testing/test-driven-development`（不清楚是否必需）
 - ❌ 差的：`@skills/testing/test-driven-development/SKILL.md`（强制加载，浪费上下文）
 

@@ -48,7 +48,14 @@ grill-with-docs (设计) ──→ writing-plans (计划) ──→ executing-pl
 
 **在 Claude Code 中：** 使用 `Skill` 工具。当你调用一个技能时，其内容会被加载并呈现给你——直接遵循即可。绝不要用 Read 工具读取技能文件。
 
-**在其他环境中：** 查看你的平台文档了解技能的加载方式。
+**在其他环境中：** 技能正文使用 Claude Code 的工具名称。如果你的平台不是 Claude Code，先读取 `references/` 下对应的工具映射表，再按映射执行：
+
+| 平台 | 工具映射表 |
+|------|-----------|
+| Codex | `references/codex-tools.md` |
+| Copilot CLI | `references/copilot-tools.md` |
+| Gemini CLI | `references/gemini-tools.md` |
+| Hermes Agent | `references/hermes-tools.md` |
 
 ## 使用技能
 

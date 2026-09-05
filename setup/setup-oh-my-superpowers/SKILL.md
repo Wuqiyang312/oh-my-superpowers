@@ -71,6 +71,17 @@ disable-model-invocation: true
 [模式 1 或 2]。参见 `docs/agents/toolchain.md`。
 ```
 
+**模板文件** —— 从本技能目录复制，写入 `docs/agents/`：
+
+| 写入目标 | 模板 |
+|---------|------|
+| `docs/agents/issue-tracker.md` | `issue-tracker-github.md`（GitHub）/ `issue-tracker-gitlab.md`（GitLab）/ `issue-tracker-local.md`（本地 markdown） |
+| `docs/agents/domain.md` | `domain.md` |
+| `docs/agents/triage-labels.md` | `triage-labels.md` |
+
+- 跟踪器选「其他」（Jira、Linear 等）时没有模板——按部分 A 收集到的信息自由格式编写。
+- `docs/agents/toolchain.md` 没有模板，内容就是上面那句模式 1 或 2。
+
 ### 5. 完成
 
 告知用户设置已完成，以及哪些技能现在会读取这些文件。
