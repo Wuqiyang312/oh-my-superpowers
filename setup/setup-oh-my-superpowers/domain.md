@@ -7,6 +7,7 @@
 - 仓库根目录的 **`CONTEXT.md`**，或
 - 如果存在，仓库根目录的 **`CONTEXT-MAP.md`** —— 它指向每个上下文的一个 `CONTEXT.md`。阅读与主题相关的每一个。
 - **`docs/adr/`** —— 阅读触及你将要工作领域的 ADR。在多上下文仓库中，还要检查 `src/<context>/docs/adr/` 中上下文特定的决策。
+- **`docs/specs/`** —— 阅读触及你将要工作领域的设计文档。在多上下文仓库中，还要检查 `src/<context>/docs/specs/` 中上下文特定的设计文档。
 
 如果这些文件不存在，**静默继续**。不要标记它们不存在；不要建议预先创建它们。生产者技能（`/grill-with-docs`）会在术语或决策实际解决时惰性创建它们。
 
@@ -20,6 +21,9 @@
 ├── docs/adr/
 │   ├── 0001-event-sourced-orders.md
 │   └── 0002-postgres-for-write-model.md
+├── docs/specs/
+│   ├── 2024-05-01-order-lifecycle.md
+│   └── 2024-05-01-write-model-shape.md
 └── src/
 ```
 
@@ -29,13 +33,16 @@
 /
 ├── CONTEXT-MAP.md
 ├── docs/adr/                          ← 全系统决策
+├── docs/specs/                        ← 全系统设计文档
 └── src/
     ├── ordering/
     │   ├── CONTEXT.md
-    │   └── docs/adr/                  ← 上下文特定决策
+    │   ├── docs/adr/                  ← 上下文特定决策
+    │   └── docs/specs/                ← 上下文特定设计文档
     └── billing/
         ├── CONTEXT.md
-        └── docs/adr/
+        ├── docs/adr/
+        └── docs/specs/
 ```
 
 ## 使用词汇表的术语
