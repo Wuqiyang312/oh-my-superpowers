@@ -80,6 +80,7 @@ docs/
 | [caveman](./general/caveman/SKILL.md) | 超压缩通信，工具链内自动启用 |
 | [handoff](./general/handoff/SKILL.md) | 对话 → 交接文档 |
 | [migrating-docs-layout](./general/migrating-docs-layout/SKILL.md) | 将仓库文档布局迁移到 `docs/specs/` 与 `.oh-my-superpowers/` 统一约定 |
+| [user-dialogue-templates](./general/user-dialogue-templates/SKILL.md) | 用户对话和项目对接模板 |
 
 ### [Chinese](./chinese/) — 中文特定规范
 
