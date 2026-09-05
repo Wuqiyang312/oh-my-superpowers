@@ -15,7 +15,7 @@ _避免使用_：pipeline、workflow chain
 _避免使用_：spec 作为文档类型名称——目录名 `docs/specs/` 是沿用路径，文档本身的术语是"设计文档"
 
 **执行计划（Execution Plan）**：
-`docs/plans/<feature>.md`，writing-plans 产出的可执行实现计划，包含任务拆分、文件列表和步骤。
+`docs/plans/YYYY-MM-DD-<feature>.md`，writing-plans 产出的可执行实现计划，包含任务拆分、文件列表和步骤。
 _避免使用_：task list、todo list
 
 **统一 docs 目录（Unified Docs Directory）**：
