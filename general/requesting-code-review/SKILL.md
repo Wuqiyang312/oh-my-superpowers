@@ -100,4 +100,4 @@ HEAD_SHA=$(git rev-parse HEAD)
 - 展示证明其可行的代码/测试
 - 要求澄清
 
-参见模板：requesting-code-review/code-reviewer.md
+参见模板：code-reviewer.md
