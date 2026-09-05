@@ -2,7 +2,7 @@
 
 当用户想要为选定的深化候选探索替代接口时，使用此并行子 agent 模式。基于 Ousterhout 的"Design It Twice"——你的第一个想法不太可能是最好的。
 
-使用 [LANGUAGE.md](LANGUAGE.md) 中的词汇——**module**、**interface**、**seam**、**adapter**、**leverage**。
+使用 [LANGUAGE.md](LANGUAGE.md) 中的词汇——**模块**、**接口**、**缝合处**、**适配器**、**杠杆效应**。
 
 ## 流程
 
