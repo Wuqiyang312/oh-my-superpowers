@@ -22,4 +22,4 @@ Skills 使用 Claude Code 的工具名称。在 Codex 中遇到这些名称时�
 multi_agent = true
 ```
 
-启用后可使用 `spawn_agent`、`wait` 和 `close_agent`，支持 `dispatching-parallel-agents` 和 `subagent-driven-development` 等 skills。
+启用后可使用 `spawn_agent`、`wait` 和 `close_agent`，支持 `dispatching-parallel-agents` 和 `subagent-driven-development` 等上游 skills（本仓库对应 `executing-plans`）。

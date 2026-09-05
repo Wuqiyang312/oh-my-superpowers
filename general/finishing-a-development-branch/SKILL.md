@@ -267,8 +267,7 @@ git worktree prune  # 自愈：清理任何过期的注册记录
 
 **被以下技能调用：**
 
-- **subagent-driven-development**（步骤 7）- 所有任务完成后
-- **executing-plans**（步骤 5）- 所有批次完成后
+- **executing-plans** - 所有任务完成后
 
 **配合使用：**
 
