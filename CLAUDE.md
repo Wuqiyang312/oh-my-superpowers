@@ -29,6 +29,6 @@
   CONTEXT.md          (领域术语表)
   docs/agents/        (配置文件目录)
   docs/adr/           (设计决策)
-  docs/specs/         (设计概要)
+  docs/specs/         (设计文档)
   docs/plans/         (执行计划)
 ```

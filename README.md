@@ -39,14 +39,14 @@ npx skills@latest add Wuqiyang312/oh-my-superpowers
 
 ```
 docs/
-├── AGENTS.md              # 核心记录文件（引导智能体阅读 docs/agents/）
+├── AGENTS.md              # 引导文件（告诉 agent 接下来读 CLAUDE.md / CONTEXT.md / docs/agents/）
 ├── agents/                # 配置文件目录（setup-oh-my-superpowers 产出）
 │   ├── issue-tracker.md
 │   ├── domain.md
 │   └── toolchain.md
 ├── adr/                    # 设计决策（grill-with-docs 产出）
 │   └── 0001-xxx.md
-├── specs/                  # 设计概要（brainstorming 或 grill-with-docs 产出）
+├── specs/                  # 设计文档（brainstorming 或 grill-with-docs 产出）
 │   └── YYYY-MM-DD-feature.md
 ├── plans/                  # 执行计划（writing-plans 产出）
 │   └── YYYY-MM-DD-feature.md
