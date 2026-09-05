@@ -38,20 +38,23 @@ npx skills@latest add Wuqiyang312/oh-my-superpowers
 ### 统一 docs 目录
 
 ```
-docs/
+仓库根目录/
 ├── AGENTS.md              # 引导文件（告诉 agent 接下来读 CLAUDE.md / CONTEXT.md / docs/agents/）
-├── agents/                # 配置文件目录（setup-oh-my-superpowers 产出）
-│   ├── issue-tracker.md
-│   ├── domain.md
-│   └── toolchain.md
-├── adr/                    # 设计决策（grill-with-docs 产出）
-│   └── 0001-xxx.md
-├── specs/                  # 设计文档（brainstorming 或 grill-with-docs 产出）
-│   └── YYYY-MM-DD-feature.md
-├── plans/                  # 执行计划（writing-plans 产出）
-│   └── YYYY-MM-DD-feature.md
-└── agents/                 # agent 配置：issue tracker、domain、toolchain
+├── CONTEXT.md             # 领域术语表
+├── general/               # 语言无关通用工程技能
+├── chinese/               # 中文特定规范
+├── setup/                 # 安装引导
+└── docs/
+    ├── specs/             # 设计文档（brainstorming 或 grill-with-docs 产出）
+    │   └── YYYY-MM-DD-<feature>.md
+    └── plans/             # 执行计划（writing-plans 产出）
+        └── YYYY-MM-DD-<feature-name>.md
 ```
+
+以下目录属于统一结构，但本仓库尚未产出，按需由对应技能创建：
+
+- `docs/adr/` —— 设计决策，由 `grill-with-docs` 产出
+- `docs/agents/` —— agent 配置（`issue-tracker.md`、`domain.md`、`toolchain.md`），由 `setup-oh-my-superpowers` 产出
 
 ## 技能分类
 

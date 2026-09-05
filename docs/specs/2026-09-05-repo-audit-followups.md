@@ -72,17 +72,22 @@
 | `chinese-documentation` | 中文文档规范 | 中文技术文档编写规范 |
 | `chinese-git-workflow` | 中文 git 工作流 | 中文 git 工作流（Gitee/Coding/极狐 GitLab 适配） |
 
-### 3. README 的 docs 树把 `CONTEXT.md` 画在 `docs/` 下面
+### ~~3. README 的 docs 树把 `CONTEXT.md` 画在 `docs/` 下面~~ —— 已解决
 
-实际 `CONTEXT.md` 在仓库根目录。同仓的 `CLAUDE.md` 树和 `CONTEXT.md:22` 都把它与 `docs/` 平级处理，只有 `README.md` 这棵不一致。
+**定性结论（用户裁决）：那棵树描述本仓库的实际布局。**
 
-**牵涉一个需要先定的问题**：那棵树到底描述"本仓库的实际布局"还是"下游仓库应该采用的约定"。定性之前改容易改错方向。
+据此重写了 `README.md` 的树。顺带发现它的问题不止位置一处：
 
-### 4. `docs/adr/` 在本仓库不存在
+- `AGENTS.md` 被画在 `docs/` 下（实际在根目录）
+- `agents/` 出现了**两次**（合并时的重复残留）
+- `adr/` 列了但本仓库没有
+- `CONTEXT.md` 完全缺失
 
-`docs/` 下只有 `plans/` 和 `specs/`。但 `CLAUDE.md` 的树、`CONTEXT.md:22` 的词条、多处 SKILL.md 都把 `docs/adr/` 列为标准结构的一部分。
+### ~~4. `docs/adr/` 在本仓库不存在~~ —— 已解决
 
-与第 3 条同类：需要先确认这是"下游约定"还是"本仓库待建"。
+按"描述实际布局"的定性，三棵树（`README.md`、`CLAUDE.md`、`AGENTS.md`）统一改为：只画真实存在的目录，`docs/adr/` 与 `docs/agents/` 标为"按需创建，本仓库当前无"，并注明由哪个技能产出。
+
+**这条定性需要沿用**：将来新增目录时，要么它确实存在于本仓库才画进树里，要么标注按需创建。不要把"标准结构"当成"已存在"。
 
 ### 5. `improve-codebase-architecture/DEEPENING.md` 未被自有 SKILL.md 收录
 

@@ -27,8 +27,8 @@
 ```
   AGENTS.md           (引导文件：告诉 agent 接下来读 CLAUDE.md / CONTEXT.md / docs/agents/)
   CONTEXT.md          (领域术语表)
-  docs/agents/        (配置文件目录)
-  docs/adr/           (设计决策)
   docs/specs/         (设计文档)
   docs/plans/         (执行计划)
+  docs/adr/           (设计决策 — 按需创建，本仓库当前无)
+  docs/agents/        (配置文件目录 — 按需创建，本仓库当前无)
 ```
