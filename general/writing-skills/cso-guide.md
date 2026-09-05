@@ -144,7 +144,7 @@ wc -w skills/path/SKILL.md
 - `creating-skills`、`testing-skills`、`debugging-with-logs`
 - 主动的，描述你正在进行的操作
 
-### 4. 交叉引用其他技能
+### 5. 交叉引用其他技能
 
 **编写引用其他技能的文档时：**
 
