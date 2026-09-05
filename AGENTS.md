@@ -1,5 +1,7 @@
 # Oh My Superpowers
 
+> **本文件是引导文件（bootstrap）** —— 告诉 agent 这个仓库是什么、东西在哪、接下来该读什么。领域术语不在这里，见 [`CONTEXT.md`](./CONTEXT.md)。
+
 技能按类别组织在 `general/`、`chinese/`、`setup/` 下的文件夹中。
 
 - `general/` —— 语言无关通用工程技能
@@ -11,6 +13,12 @@
 顶层 `README.md` 中的每个技能条目必须将技能名称链接到其 `SKILL.md`。
 
 每个类别文件夹都有一个 `README.md`，列出该类别中的每个技能并附带一行描述，技能名称链接到其 `SKILL.md`。
+
+## 接下来读什么
+
+- [`CLAUDE.md`](./CLAUDE.md) —— 仓库约定与规则（Claude Code 自动加载）
+- [`CONTEXT.md`](./CONTEXT.md) —— 领域术语表，查术语来这里
+- `docs/agents/` —— 项目配置，由 `setup-oh-my-superpowers` 生成，可能不存在
 
 ## 端到端工具链
 
