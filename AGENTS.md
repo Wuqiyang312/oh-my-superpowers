@@ -6,7 +6,7 @@
 - `chinese/` —— 中文特定规范
 - `setup/` —— 安装引导
 
-每个技能都必须在顶层 `README.md` 中有引用，并在 `.Codex-plugin/plugin.json` 中有条目。
+每个技能都必须在顶层 `README.md` 中有引用，并在 `.claude-plugin/plugin.json` 中有条目。
 
 顶层 `README.md` 中的每个技能条目必须将技能名称链接到其 `SKILL.md`。
 
@@ -20,9 +20,9 @@
 
 统一 docs/ 目录:
   AGENTS.md           (核心记录文件，引导智能体阅读 docs/agents/)
+  CONTEXT.md          (领域术语表)
   docs/agents/        (配置文件目录)
   docs/adr/           (设计决策)
-  docs/design/        (设计概要)
-  docs/specs/         (验证的设计)
+  docs/specs/         (设计文档)
   docs/plans/         (执行计划)
 ```
