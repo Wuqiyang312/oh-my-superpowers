@@ -1,6 +1,6 @@
 ---
 name: grill-with-docs
-description: 根据现有领域模型挑战你的方案，打磨术语，并在决策形成时同步更新文档（CONTEXT.md、ADR、design/）。在用户希望针对项目的语言和已记录决策对方案进行压力测试时使用。
+description: 根据现有领域模型挑战你的方案，打磨术语，并在决策形成时同步更新文档（CONTEXT.md、ADR、docs/specs/）。在用户希望针对项目的语言和已记录决策对方案进行压力测试时使用。
 ---
 
 <caveman>
