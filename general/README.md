@@ -30,7 +30,7 @@
 ```
 grill-with-docs → writing-plans → executing-plans
        │              │
-       ├─ docs/design/ │
+       ├─ docs/specs/ │
        └─ CONTEXT.md   └─ docs/plans/
            + ADR
 

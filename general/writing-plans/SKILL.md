@@ -1,6 +1,6 @@
 ---
 name: writing-plans
-description: 从设计文档或需求生成可执行计划。当有 `docs/design/` 设计文档或明确需求需要转为多步骤执行计划时使用。
+description: 从设计文档或需求生成可执行计划。当有 `docs/specs/` 设计文档或明确需求需要转为多步骤执行计划时使用。
 ---
 
 # 编写计划
@@ -11,7 +11,7 @@ description: 从设计文档或需求生成可执行计划。当有 `docs/design
 
 假设他们是有经验的开发者，但对我们的工具链和问题领域几乎一无所知。
 
-**输入：** `docs/design/<feature>.md`（如有，从设计文档读取范围、验收标准、边界情况、关键决策）
+**输入：** `docs/specs/<feature>.md`（如有，从设计文档读取范围、验收标准、边界情况、关键决策）
 **没有设计文档？** 先问用户需求，或使用 `grill-with-docs` 从设计开始。
 
 **计划保存位置：** `docs/plans/YYYY-MM-DD-<feature-name>.md`

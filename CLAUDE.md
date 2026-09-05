@@ -21,6 +21,6 @@
 统一 docs/ 目录:
   CONTEXT.md          (术语表)
   docs/adr/           (设计决策)
-  docs/design/        (设计概要)
+  docs/specs/        (设计概要)
   docs/plans/         (执行计划)
 ```

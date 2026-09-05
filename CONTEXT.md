@@ -11,7 +11,7 @@ grill-with-docs → writing-plans → executing-plans 组成的完整工具链�
 _避免使用_：pipeline、workflow chain
 
 **设计文档（Design Doc）**：
-`docs/design/<feature>.md`，grill-with-docs 产出的结构化规格文档，包含目标、范围、验收标准、边界情况和关键决策。
+`docs/specs/<feature>.md`，grill-with-docs 产出的结构化规格文档，包含目标、范围、验收标准、边界情况和关键决策。
 _避免使用_：spec、需求文档、PRD
 
 **执行计划（Execution Plan）**：
@@ -19,7 +19,7 @@ _避免使用_：spec、需求文档、PRD
 _避免使用_：task list、todo list
 
 **统一 docs 目录（Unified Docs Directory）**：
-`CONTEXT.md` + `docs/adr/` + `docs/design/` + `docs/plans/` 组成的标准文档结构，确保工具链各阶段通过文件系统交接。
+`CONTEXT.md` + `docs/adr/` + `docs/specs/` + `docs/plans/` 组成的标准文档结构，确保工具链各阶段通过文件系统交接。
 
 ## 关系
 
@@ -30,5 +30,5 @@ _避免使用_：task list、todo list
 
 ## 标记的歧义
 
-- "plan" 之前被用来同时指代 design doc 和 execution plan —— 已解决：design doc 在 `docs/design/`，execution plan 在 `docs/plans/`
+- "plan" 之前被用来同时指代 design doc 和 execution plan —— 已解决：design doc 在 `docs/specs/`，execution plan 在 `docs/plans/`
 - "superpowers" —— 已解决：统一命名为 oh-my-superpowers，所有技能引用使用 `oh-my-superpowers:` 前缀

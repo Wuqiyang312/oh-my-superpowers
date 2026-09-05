@@ -68,7 +68,7 @@ digraph execution_mode {
 使用 `implementer-prompt.md` 作为子智能体的指令基础，附加以下上下文：
 - 任务完整文本和完成标准
 - 要创建/修改的文件路径
-- 相关的 `docs/design/` 和 `docs/adr/` 上下文
+- 相关的 `docs/specs/` 和 `docs/adr/` 上下文
 - 使用 **caveman 模式**与子智能体通信——简洁指令，减少 token 消耗，避免历史压缩丢失关键信息
 
 ### 处理子智能体状态
@@ -196,7 +196,7 @@ digraph execution_mode {
 
 **输入：**
 - **writing-plans** — 创建 `docs/plans/` 下的计划文件
-- **grill-with-docs** — 创建 `docs/design/` 下的设计文档
+- **grill-with-docs** — 创建 `docs/specs/` 下的设计文档
 
 **输出：**
 - **finishing-a-development-branch** — 所有任务完成后收尾
