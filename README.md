@@ -44,8 +44,9 @@ docs/
 │   └── 0001-xxx.md
 ├── specs/                  # 设计概要（brainstorming 或 grill-with-docs 产出）
 │   └── YYYY-MM-DD-feature.md
-└── plans/                  # 执行计划（writing-plans 产出）
-    └── YYYY-MM-DD-feature.md
+├── plans/                  # 执行计划（writing-plans 产出）
+│   └── YYYY-MM-DD-feature.md
+└── agents/                 # agent 配置：issue tracker、domain、toolchain
 ```
 
 ## 技能分类

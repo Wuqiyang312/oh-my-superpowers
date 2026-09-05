@@ -23,4 +23,5 @@
   docs/adr/           (设计决策)
   docs/specs/         (设计概要)
   docs/plans/         (执行计划)
+  docs/agents/        (agent 配置：issue tracker、domain、toolchain)
 ```
