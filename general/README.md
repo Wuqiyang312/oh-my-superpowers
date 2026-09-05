@@ -16,7 +16,7 @@
 | [writing-skills](./writing-skills/SKILL.md) | 用 TDD 方法创建和验证 agent 技能 |
 | [improve-codebase-architecture](./improve-codebase-architecture/SKILL.md) | 代码库架构深耕 |
 | [to-prd](./to-prd/SKILL.md) | 对话 → PRD |
-| [to-issues](./to-issues/SKILL.md) | 计划 → GitHub issues |
+| [to-issues](./to-issues/SKILL.md) | 计划 → 可领取的 issues |
 | [requesting-code-review](./requesting-code-review/SKILL.md) | 发起代码审查请求 |
 | [receiving-code-review](./receiving-code-review/SKILL.md) | 接收和处理代码审查反馈 |
 | [finishing-a-development-branch](./finishing-a-development-branch/SKILL.md) | 开发分支收尾 |
