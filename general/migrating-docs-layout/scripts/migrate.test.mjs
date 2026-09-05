@@ -75,7 +75,7 @@ test('dateFor 返回 YYYY-MM-DD', () => {
 });
 
 import { walk, preflight, scan } from './migrate.mjs';
-import { makeFixture, makeOptOutFixture, makeSandbox, cleanupSandboxes } from './fixtures.test.mjs';
+import { makeFixture, makeOptOutFixture, makeNonTextOptOutFixture, makeSandbox, cleanupSandboxes } from './fixtures.test.mjs';
 import { execFileSync } from 'node:child_process';
 
 after(() => cleanupSandboxes());
@@ -224,6 +224,70 @@ test('apply 不搬移带标记的文件，对照文件照常搬走', () => {
   apply(root, null, { dryRun: false });
   assert.ok(fs.existsSync(path.join(root, 'docs/design/exempt-move.md')), '带标记的文件应留在原地');
   assert.ok(!fs.existsSync(path.join(root, 'docs/design/control-move.md')), '对照文件应已搬走');
+});
+
+// —— 非文本文件（.html/.css 等不在 TEXT_EXT 里的文件）上的标记检测 ——
+// 搬移遍历走 walk(textOnly: false)，标记检测若只跑文本文件，这些文件上的标记就会静默失效。
+
+// 与 fixtures.test.mjs 同理写成字面量：标记是对用户的公开约定，改它必须让测试变红。
+const MARKER = '<!-- migrate:ignore -->';
+
+test('scan 跳过带标记的 .html，同龄的对照 .html 照常进移动计划', () => {
+  const report = scan(makeNonTextOptOutFixture());
+  const moveFroms = report.moves.map((m) => m.from);
+  assert.ok(!moveFroms.includes('.superpowers/brainstorm/exempt.html'), '带标记的 .html 不该参与搬移');
+  assert.ok(moveFroms.includes('.superpowers/brainstorm/control.html'), '同样内容去掉标记就该搬——对照组，证明检测真在起作用');
+});
+
+test('apply 不搬移带标记的 .html，对照 .html 照常搬走', () => {
+  const root = makeNonTextOptOutFixture();
+  apply(root, ['dot-superpowers'], { dryRun: false });
+  assert.ok(fs.existsSync(path.join(root, '.superpowers/brainstorm/exempt.html')), '带标记的 .html 应留在原地');
+  assert.ok(
+    fs.existsSync(path.join(root, '.oh-my-superpowers/brainstorm/control.html')),
+    '对照 .html 应已搬走'
+  );
+  assert.match(
+    fs.readFileSync(path.join(root, '.superpowers/brainstorm/exempt.html'), 'utf8'),
+    new RegExp(MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+    '带标记的文件一个字都不该被改'
+  );
+});
+
+test('含 NUL 字节的二进制文件：检测不崩溃、不报错，也不被当成有标记', () => {
+  const root = makeNonTextOptOutFixture();
+  const report = scan(root); // 走到这里没抛异常即通过：读二进制不得崩、不得报错
+  assert.ok(
+    report.moves.some((m) => m.from === '.superpowers/blob.bin'),
+    '二进制文件不该被当成有标记——它该照常进移动计划'
+  );
+});
+
+test('超过体积上限的非文本文件跳过标记检测，按"无标记"处理', () => {
+  // 1 MB 上限是刻意的取舍：为找一行注释把几百 MB 的产物读进内存不值得。
+  // 这里锁住的是"超限 = 不检测"，行为与加这个功能之前一致（原本非文本文件根本不检测）。
+  const root = makeNonTextOptOutFixture();
+  fs.writeFileSync(path.join(root, '.superpowers/big.bin'), Buffer.concat([Buffer.from(`${MARKER}\n`), Buffer.alloc(1024 * 1024, 0x61)]));
+  const report = scan(root);
+  assert.ok(
+    report.moves.some((m) => m.from === '.superpowers/big.bin'),
+    '超限文件不读标记，按无标记处理'
+  );
+});
+
+test('超过体积上限的文本文件仍按标记豁免，标记在文件末尾也生效', () => {
+  // 文本文件维持整读（本功能上线以来的既有行为），不能因为新增二进制闸门而改变：
+  // 只取前面一小段的实现会漏掉末尾的标记，那等于又造一个新的静默失效。
+  const root = makeNonTextOptOutFixture();
+  fs.mkdirSync(path.join(root, 'docs/design'), { recursive: true });
+  const filler = '# 填充\n'.repeat(150 * 1024); // > 1 MB
+  fs.writeFileSync(
+    path.join(root, 'docs/design/big.md'),
+    `见 .superpowers/brainstorm/\n${filler}\n${MARKER}\n`
+  );
+  const report = scan(root);
+  assert.ok(!report.moves.some((m) => m.from === 'docs/design/big.md'), '超限的 .md 仍该被标记豁免');
+  assert.ok(!report.hits.some((h) => h.path === 'docs/design/big.md'), '豁免文件里的旧路径不该被改写');
 });
 
 test('visual-companion 的旧路径提示留在扫描视野之外', () => {

@@ -68,6 +68,29 @@ export function makeOptOutFixture() {
   return gitInit(root);
 }
 
+/**
+ * 建一个专门验证"非文本文件（.html/.css 等不在 TEXT_EXT 里的文件）上的标记检测"的临时 git 仓库。
+ *
+ * 和 makeOptOutFixture 一样成对出现：带标记 / 不带标记的对照组。少了对照组，
+ * "标记生效了"和"这个文件本来就不该被搬"在断言上长得一模一样。
+ */
+export function makeNonTextOptOutFixture() {
+  const root = path.join(makeSandbox(), 'repo');
+  const w = (rel, content) => write(root, rel, content);
+  const MARKER = '<!-- migrate:ignore -->';
+
+  // .html 不在 TEXT_EXT 里，但搬移遍历走的是 walk(textOnly: false)，会带上它。
+  // 标记检测若只跑文本文件，这里的标记就会静默失效：用户以为豁免了，实际照搬不误。
+  w('.superpowers/brainstorm/exempt.html', `${MARKER}\n<p>原型</p>\n`);
+  w('.superpowers/brainstorm/control.html', '<p>原型</p>\n');
+
+  // 含 NUL 字节的二进制产物：检测它不得崩溃、不得报错，也不得把它当成有标记。
+  // 内容里故意先写标记再接 NUL —— 二进制闸门一旦失效，这个文件会被误判成已豁免。
+  w('.superpowers/blob.bin', Buffer.concat([Buffer.from(`${MARKER}\n`), Buffer.from([0x00, 0x01, 0x02, 0x00])]));
+
+  return gitInit(root);
+}
+
 /** 测试结束时清掉所有沙箱（含落在沙箱里的备份目录）。 */
 export function cleanupSandboxes() {
   for (const d of sandboxes) fs.rmSync(d, { recursive: true, force: true });

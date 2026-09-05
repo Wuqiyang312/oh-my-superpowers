@@ -89,10 +89,74 @@ export const EXCLUDE_GLOBS = ['docs/specs/**', 'docs/plans/**', '**/migrating-do
  */
 export const IGNORE_MARKER = '<!-- migrate:ignore -->';
 
-/** 文件是否带 opt-out 标记。读不到就当没有——与加这个功能之前的迁移行为一致。 */
-const hasIgnoreMarker = (root, rel) => {
+/**
+ * 标记检测的两道便宜闸门，只用于非文本文件（阈值与判定的理由见下）。
+ *
+ * 1 MB：为找一行注释把几百 MB 的产物读进内存不值得。真实文档远小于这个量级，
+ *   超限就当无标记——与加这个功能之前的迁移行为一致（那时非文本文件根本不检测）。
+ * 8 KB：只读文件开头这一段判断是否为二进制。所有常见二进制文件头都远小于此
+ *   （PNG 8 B、ELF 64 B、class 4 B），一次小读取就能挡住，不必先把整个文件读进来。
+ */
+const MARKER_MAX_BYTES = 1024 * 1024;
+const MARKER_HEAD_BYTES = 8 * 1024;
+
+/**
+ * 非文本文件是否该跳过标记检测（跳过 = 当作无标记）。
+ *
+ * 只挡两种：太大，或者开头就出现 NUL 字节。NUL 是二进制的判据——真正的文本
+ * （UTF-8、GBK 等）不会出现，出现了就说明这是产物而不是文档；按 UTF-8 解码
+ * 这种文件只会得到一堆替换字符，里面不会有可供匹配的 HTML 注释。
+ * 打不开、读不到、stat 失败一律按"无标记"处理，与加这个功能之前的行为一致。
+ */
+const skipMarkerScan = (abs, size) => {
+  if (size > MARKER_MAX_BYTES) return true;
+  let fd;
   try {
-    return fs.readFileSync(path.join(root, rel), 'utf8').includes(IGNORE_MARKER);
+    fd = fs.openSync(abs, 'r');
+  } catch {
+    return true;
+  }
+  try {
+    const head = Buffer.alloc(Math.min(MARKER_HEAD_BYTES, size));
+    if (head.length === 0) return false; // 空文件：没有标记，但走正常路径也无害
+    fs.readSync(fd, head, 0, head.length, 0);
+    return head.includes(0);
+  } catch {
+    return true;
+  } finally {
+    fs.closeSync(fd);
+  }
+};
+
+/**
+ * 文件是否带 opt-out 标记。
+ *
+ * 文本文件（TEXT_EXT/TEXT_NAMES 认定的）整读：这是本功能上线以来的既有行为，
+ * 新增二进制闸门不能改变它——只取前面一小段会漏掉文件末尾的标记，那等于
+ * 用一个静默失效换掉另一个。
+ *
+ * 其余文件（.html/.css/以及 .superpowers/ 下的任意产物）先过闸门再解码：
+ * 不检测它们，标记在这些文件上就是静默失效（用户以为豁免了，脚本照改不误）；
+ * 无脑整读它们，又会把二进制读进内存。闸门只付出一次 stat 加一次 8 KB 读取。
+ */
+const hasIgnoreMarker = (root, rel) => {
+  const abs = path.join(root, rel);
+  if (isText(rel)) {
+    try {
+      return fs.readFileSync(abs, 'utf8').includes(IGNORE_MARKER);
+    } catch {
+      return false;
+    }
+  }
+  let size;
+  try {
+    size = fs.statSync(abs).size;
+  } catch {
+    return false;
+  }
+  if (skipMarkerScan(abs, size)) return false;
+  try {
+    return fs.readFileSync(abs, 'utf8').includes(IGNORE_MARKER);
   } catch {
     return false;
   }
@@ -154,8 +218,9 @@ export function scan(root, categories = null) {
   const moves = [];
   for (const rel of walk(root, { textOnly: false })) {
     // 带标记的文件留在原地。这一遍故意含非文本文件（.superpowers/ 下的 HTML 原型），
-    // 所以只对文本文件找标记——为找一行注释把二进制整个读进内存不值得。
-    if (isText(rel) && hasIgnoreMarker(root, rel)) continue;
+    // 标记检测必须覆盖它们——只查文本文件会让 .html 上的标记静默失效；
+    // 二进制由 hasIgnoreMarker 内部的便宜闸门挡掉，不会真的读进来。
+    if (hasIgnoreMarker(root, rel)) continue;
     const mv = planFileMove(rel, root, moveRules);
     if (mv) moves.push(mv);
   }
