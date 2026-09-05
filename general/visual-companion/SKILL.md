@@ -46,6 +46,8 @@ description: 在设计讨论中需要用浏览器展示原型、线框图、布�
 
 ## 启动会话
 
+启动前，如果项目里有 `.superpowers/` 但没有 `.oh-my-superpowers/`，提示用户先跑 `migrating-docs-layout` 迁移。
+
 ```bash
 # 启动服务器并持久化（原型保存到项目中）
 scripts/start-server.sh --project-dir /path/to/project
