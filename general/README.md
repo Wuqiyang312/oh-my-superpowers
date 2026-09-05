@@ -29,17 +29,19 @@
 ## 工具链
 
 ```
-                    ┌─ brainstorming ──► docs/specs/ ──┐
-                    │                                  │
-                    └─ grill-with-docs ────────────────┤
-                                                       ▼
-                                                  writing-plans
-                                                       │
-                                                       ▼
-                                                   docs/plans/
-                                                       │
-                                                       ▼
-                                                 executing-plans
+   从零想法     ──►  brainstorming    ─┐
+                                       │
+   已有领域模型 ──►  grill-with-docs  ─┴──►  docs/specs/
+                                             YYYY-MM-DD-<feature>.md
+                                                  │
+                                                  ▼
+                                             writing-plans
+                                                  │
+                                                  ▼
+                                              docs/plans/
+                                                  │
+                                                  ▼
+                                            executing-plans
 
 caveman (自动压缩) → 贯穿整个链路
 ```
