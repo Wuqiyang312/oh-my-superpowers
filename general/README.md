@@ -10,7 +10,8 @@
 | [executing-plans](./executing-plans/SKILL.md) | 多/单智能体执行实现计划，两阶段审查 |
 | [test-driven-development](./test-driven-development/SKILL.md) | 红-绿-重构 TDD，含深度参考文档 |
 | [diagnose](./diagnose/SKILL.md) | 系统化调试：反馈回路 + 根因分析 + 纵深防御 |
-| [brainstorming](./brainstorming/SKILL.md) | 在写代码前通过 HTML 原型探索设计 |
+| [brainstorming](./brainstorming/SKILL.md) | 通过对话将想法转化为设计规格，产出 docs/specs/ 下的设计文档 |
+| [visual-companion](./visual-companion/SKILL.md) | 浏览器内展示原型、线框图、布局对比与图表，会话内持续迭代 |
 | [prototype](./prototype/SKILL.md) | 构建可丢弃的原型来完善设计 |
 | [writing-skills](./writing-skills/SKILL.md) | 用 TDD 方法创建和验证 agent 技能 |
 | [improve-codebase-architecture](./improve-codebase-architecture/SKILL.md) | 代码库架构深耕 |

@@ -4,6 +4,7 @@
     "./general/diagnose",
     "./general/test-driven-development",
     "./general/brainstorming",
+    "./general/visual-companion",
     "./general/migrating-docs-layout",
     "./general/writing-plans",
     "./general/executing-plans",
