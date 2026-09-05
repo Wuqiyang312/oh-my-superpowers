@@ -75,7 +75,7 @@ test('dateFor 返回 YYYY-MM-DD', () => {
 });
 
 import { walk, preflight, scan } from './migrate.mjs';
-import { makeFixture, makeSandbox, cleanupSandboxes } from './fixtures.test.mjs';
+import { makeFixture, makeOptOutFixture, makeSandbox, cleanupSandboxes } from './fixtures.test.mjs';
 import { execFileSync } from 'node:child_process';
 
 after(() => cleanupSandboxes());
@@ -173,6 +173,57 @@ test('不扫描迁移工具自身的源码', () => {
   // apply 会把 RULES 自己改写掉（规则表自毁），且此后任何含旧路径的新规则都会静默复活这个 bug。
   const report = scan(ROOT, ['design', 'superpowers-docs', 'dot-superpowers']);
   assert.ok(!report.hits.some((h) => h.path.includes('migrating-docs-layout')));
+});
+
+// —— 文件级 opt-out：`<!-- migrate:ignore -->` ——
+// 目录级排除（EXCLUDE_GLOBS）解决不了"某一个文件必须留着旧路径"的情况：
+// 为了一句话把整个目录排除掉，同目录下该迁的内容就跟着一起漏了。
+
+test('scan 跳过带 migrate:ignore 标记的文件，同龄的对照文件照常命中', () => {
+  const report = scan(makeOptOutFixture());
+  const hitPaths = report.hits.map((h) => h.path);
+  const moveFroms = report.moves.map((m) => m.from);
+
+  assert.ok(!hitPaths.includes('exempt-ref.md'), '带标记的文件不该出现在命中里');
+  assert.ok(hitPaths.includes('control-ref.md'), '同样内容去掉标记就该命中——对照组，证明是标记在起作用');
+  assert.deepEqual(hitPaths, ['control-ref.md'], '整个夹具只该有对照文件这一处命中');
+
+  assert.ok(!moveFroms.includes('docs/design/exempt-move.md'), '带标记的文件不参与搬移');
+  assert.deepEqual(moveFroms, ['docs/design/control-move.md'], '只有对照文件该进移动计划');
+});
+
+test('标记放在文件中间（不在开头）同样生效', () => {
+  // 实现用的是"整个文件内容里找子串"，不是"只看首行"。这条测试锁住这个行为，
+  // 免得以后有人把实现改成只看开头还以为没差别。
+  const report = scan(makeOptOutFixture());
+  assert.ok(!report.hits.some((h) => h.path === 'mid-ref.md'), '标记夹在正文中间也应跳过整个文件');
+});
+
+test('apply 不改写带标记的文件，对照文件被正常改写', () => {
+  const root = makeOptOutFixture();
+  const r = apply(root, null, { dryRun: false });
+
+  assert.ok(!r.rewrote.includes('exempt-ref.md'), '带标记的文件不该被改写');
+  assert.ok(r.rewrote.includes('control-ref.md'), '对照文件应被改写');
+  assert.ok(!r.rewrote.includes('mid-ref.md'), '标记在中间的文件同样不该被改写');
+
+  assert.match(
+    fs.readFileSync(path.join(root, 'exempt-ref.md'), 'utf8'),
+    /\.superpowers\/brainstorm\//,
+    '带标记的文件里旧路径必须原样留下'
+  );
+  assert.match(
+    fs.readFileSync(path.join(root, 'control-ref.md'), 'utf8'),
+    /\.oh-my-superpowers\/brainstorm\//,
+    '对照文件应已迁到新路径'
+  );
+});
+
+test('apply 不搬移带标记的文件，对照文件照常搬走', () => {
+  const root = makeOptOutFixture();
+  apply(root, null, { dryRun: false });
+  assert.ok(fs.existsSync(path.join(root, 'docs/design/exempt-move.md')), '带标记的文件应留在原地');
+  assert.ok(!fs.existsSync(path.join(root, 'docs/design/control-move.md')), '对照文件应已搬走');
 });
 
 import { apply } from './migrate.mjs';

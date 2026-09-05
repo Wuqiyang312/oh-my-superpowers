@@ -80,6 +80,24 @@ const EXCLUDE_DIRS = new Set(['.git', 'node_modules', 'dist', 'build', '.next'])
 // （`{ from: '.superpowers/' }` → `{ from: '.oh-my-superpowers/' }`），规则表自毁。
 export const EXCLUDE_GLOBS = ['docs/specs/**', 'docs/plans/**', '**/migrating-docs-layout/**'];
 
+/**
+ * 文件级逃生舱：文件内容里出现这个标记，整个文件跳过——不改写引用，也不参与搬移。
+ *
+ * 目录级排除（EXCLUDE_GLOBS）解决不了"某一个文件必须留着旧路径"：
+ * 为一句话把整个目录排除掉，同目录下该迁的内容就跟着一起漏了。
+ * 必须原样写成下面这个字符串（含两端空格），检测用的是精确子串。
+ */
+export const IGNORE_MARKER = '<!-- migrate:ignore -->';
+
+/** 文件是否带 opt-out 标记。读不到就当没有——与加这个功能之前的迁移行为一致。 */
+const hasIgnoreMarker = (root, rel) => {
+  try {
+    return fs.readFileSync(path.join(root, rel), 'utf8').includes(IGNORE_MARKER);
+  } catch {
+    return false;
+  }
+};
+
 const isText = (rel) => TEXT_NAMES.has(path.basename(rel)) || TEXT_EXT.has(path.extname(rel));
 const isExcluded = (rel) =>
   EXCLUDE_GLOBS.some((g) => {
@@ -135,6 +153,9 @@ export function scan(root, categories = null) {
   // 只按文本文件过滤会把它们落下，目录搬不空、迁移等于没做。
   const moves = [];
   for (const rel of walk(root, { textOnly: false })) {
+    // 带标记的文件留在原地。这一遍故意含非文本文件（.superpowers/ 下的 HTML 原型），
+    // 所以只对文本文件找标记——为找一行注释把二进制整个读进内存不值得。
+    if (isText(rel) && hasIgnoreMarker(root, rel)) continue;
     const mv = planFileMove(rel, root, moveRules);
     if (mv) moves.push(mv);
   }
@@ -154,6 +175,9 @@ export function scan(root, categories = null) {
     const abs = path.join(root, rel);
     let text;
     try { text = fs.readFileSync(abs, 'utf8'); } catch { continue; }
+    // 带标记的文件整体跳过：它留着旧路径是有意的，不是漏迁。
+    // 在这里判断而不是在 walk 里——walk 不读文件，判断标记必须先读。
+    if (text.includes(IGNORE_MARKER)) continue;
     text.split('\n').forEach((line, i) => {
       const after = rewriteText(line, textRules);
       if (after !== line) {
