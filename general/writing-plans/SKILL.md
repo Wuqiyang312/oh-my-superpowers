@@ -11,7 +11,7 @@ description: 从设计文档或需求生成可执行计划。当有 `docs/specs/
 
 假设他们是有经验的开发者，但对我们的工具链和问题领域几乎一无所知。
 
-**输入：** `docs/specs/<feature>.md`（如有，从设计文档读取范围、验收标准、边界情况、关键决策）
+**输入：** `docs/specs/YYYY-MM-DD-<feature>.md`（日期前缀不固定——实际文件以 `docs/specs/` 下已存在的设计文档为准；如有，从设计文档读取范围、验收标准、边界情况、关键决策）
 **没有设计文档？** 先问用户需求，或使用 `grill-with-docs` 从设计开始。
 
 **计划保存位置：** `docs/plans/YYYY-MM-DD-<feature-name>.md`
@@ -144,7 +144,7 @@ git commit -m "feat: add specific feature"
 
 保存计划后，提供执行选项：
 
-**"计划已完成并保存到 `docs/plans/<filename>.md`。两种执行方式：**
+**"计划已完成并保存到 `docs/plans/YYYY-MM-DD-<feature-name>.md`。两种执行方式：**
 
 **1. 多智能体并行（推荐）** - 每个任务分配独立子智能体并行执行 + 两阶段审查，快速迭代
 

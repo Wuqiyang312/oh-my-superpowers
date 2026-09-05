@@ -85,7 +85,7 @@ grill 期间：用压缩格式提问和记录。砍掉废话、填充词、客�
 
 ### 输出设计文档
 
-grilling session 结束后，产出一份 `docs/specs/<feature>.md` 设计文档，作为与 `writing-plans` 的交接件：
+grilling session 结束后，产出一份 `docs/specs/YYYY-MM-DD-<feature>.md` 设计文档，作为与 `writing-plans` 的交接件：
 
 ```markdown
 # <功能名称> 设计文档
@@ -113,7 +113,7 @@ grilling session 结束后，产出一份 `docs/specs/<feature>.md` 设计文档
 ```
 
 **模式选择：** 设计文档输出后，提供两种路径：
-- **模式 1：** 仅设计 → "下一步使用 `writing-plans` 从 `docs/specs/<feature>.md` 生成执行计划"
+- **模式 1：** 仅设计 → "下一步使用 `writing-plans` 从 `docs/specs/YYYY-MM-DD-<feature>.md` 生成执行计划"
 - **模式 2：** 设计 → 计划 → 执行 → "下一步使用 `writing-plans` 生成计划，再用 `executing-plans` 并行执行"
 
 ### 审慎提议 ADR

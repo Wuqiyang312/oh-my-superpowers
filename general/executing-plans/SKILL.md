@@ -39,7 +39,7 @@ digraph execution_mode {
 
 ### 步骤 1：加载并审查计划
 
-1. 读取计划文件（`docs/plans/<feature>.md`）
+1. 读取计划文件（`docs/plans/YYYY-MM-DD-<feature-name>.md`——日期前缀不固定，实际文件以 `docs/plans/` 下列出的计划为准）
 2. 批判性审查——识别计划中的任何问题或疑虑：
    - 步骤之间是否有依赖遗漏？
    - 验证条件是否明确？
@@ -173,7 +173,7 @@ digraph execution_mode {
 ```markdown
 ## 执行报告
 
-**计划：** docs/plans/<feature>.md
+**计划：** `docs/plans/YYYY-MM-DD-<feature-name>.md`
 **执行模式：** 多智能体并行 / 单智能体串行 / 并行调试
 **任务：** N/N 已完成
 
