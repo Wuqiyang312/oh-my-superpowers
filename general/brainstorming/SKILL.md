@@ -146,6 +146,4 @@ digraph brainstorming {
 
 ## 视觉伴侣
 
-需要视觉验证时，使用独立技能：
-
-**需要视觉验证时：** 必需子技能：oh-my-superpowers:visual-companion
+**必需子技能：** 使用 oh-my-superpowers:visual-companion
